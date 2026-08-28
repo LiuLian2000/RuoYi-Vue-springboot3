@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.errorcode.mapper.ErrorCodeMapper">
+    
+    <resultMap type="ErrorCode" id="ErrorCodeResult">
+        <result property="id"    column="id"    />
+        <result property="systemId"    column="system_id"    />
+        <result property="systemName"    column="system_name"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="code"    column="code"    />
+        <result property="message"    column="message"    />
+        <result property="description"    column="description"    />
+        <result property="severity"    column="severity"    />
+        <result property="severityName"    column="severity_name"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectErrorCodeVo">
+        select ec.id, ec.system_id, es.system_name, ec.category_id, ecg.category_name,
+               ec.code, ec.message, ec.description, ec.severity, esv.severity_name,
+               ec.status, ec.del_flag, ec.create_by, ec.create_time, ec.update_by, ec.update_time
+        from error_code ec
+        left join error_system es on es.id = ec.system_id and es.del_flag = 0
+        left join error_category ecg on ecg.id = ec.category_id and ecg.del_flag = 0
+        left join error_severity esv on esv.severity_code = ec.severity and esv.del_flag = 0
+    </sql>
+
+    <select id="selectErrorCodeList" parameterType="ErrorCode" resultMap="ErrorCodeResult">
+        <include refid="selectErrorCodeVo"/>
+        <where>
+            ec.del_flag = 0
+            <if test="systemId != null "> and ec.system_id = #{systemId}</if>
+            <if test="categoryId != null "> and ec.category_id = #{categoryId}</if>
+            <if test="code != null  and code != ''"> and ec.code like concat('%', #{code}, '%')</if>
+            <if test="message != null  and message != ''"> and ec.message like concat('%', #{message}, '%')</if>
+            <if test="description != null  and description != ''"> and ec.description like concat('%', #{description}, '%')</if>
+            <if test="severity != null "> and ec.severity = #{severity}</if>
+            <if test="status != null "> and ec.status = #{status}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and ec.create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and ec.update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectErrorCodeById" parameterType="Long" resultMap="ErrorCodeResult">
+        <include refid="selectErrorCodeVo"/>
+        where ec.id = #{id} and ec.del_flag = 0
+    </select>
+
+    <insert id="insertErrorCode" parameterType="ErrorCode" useGeneratedKeys="true" keyProperty="id">
+        insert into error_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">system_id,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="message != null and message != ''">message,</if>
+            <if test="description != null">description,</if>
+            <if test="severity != null">severity,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="systemId != null">#{systemId},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="message != null and message != ''">#{message},</if>
+            <if test="description != null">#{description},</if>
+            <if test="severity != null">#{severity},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateErrorCode" parameterType="ErrorCode">
+        update error_code
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="systemId != null">system_id = #{systemId},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="message != null and message != ''">message = #{message},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="severity != null">severity = #{severity},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+
+    <update id="deleteErrorCodeById" parameterType="Long">
+        update error_code
+        set del_flag = id
+        where id = #{id}
+          and del_flag = 0
+    </update>
+    
+
+    <update id="deleteErrorCodeByIds" parameterType="String">
+        update error_code
+        set del_flag = id
+        where del_flag = 0
+        and id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

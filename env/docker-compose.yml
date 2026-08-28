@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: ruoyi-mysql
+    restart: unless-stopped
+    pull_policy: never
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ry-vue
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ../sql:/docker-entrypoint-initdb.d:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7
+    container_name: ruoyi-redis
+    restart: unless-stopped
+    pull_policy: never
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

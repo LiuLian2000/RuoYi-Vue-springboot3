@@ -1,0 +1,637 @@
+{
+  "info": {
+    "_postman_id": "b4f04cb6-8e2e-4d59-bf67-9d9db3c8e001",
+    "name": "错误码管理 Controller 测试",
+    "description": "可导入 Apifox 的 Postman Collection。请先设置 token；按文件中的顺序运行，测试数据会自动创建并在最后软删除。\n\n覆盖接口：ErrorSystemController、ErrorCategoryController、ErrorSeverityController、ErrorCodeController。\n\n权限要求：管理员 token，或具备对应 errorcode:* 权限。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const contentType = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+          "pm.test('HTTP 状态码为 200', function () {",
+          "    pm.expect(pm.response.code).to.eql(200);",
+          "});",
+          "if (contentType.includes('json')) {",
+          "    const body = pm.response.json();",
+          "    pm.test('业务 code 为 200', function () {",
+          "        pm.expect(body.code).to.eql(200);",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "pageNum",
+      "value": "1"
+    },
+    {
+      "key": "pageSize",
+      "value": "10"
+    },
+    {
+      "key": "systemId",
+      "value": ""
+    },
+    {
+      "key": "categoryId",
+      "value": ""
+    },
+    {
+      "key": "severityId",
+      "value": ""
+    },
+    {
+      "key": "errorCodeId",
+      "value": ""
+    },
+    {
+      "key": "testSystemCode",
+      "value": ""
+    },
+    {
+      "key": "testCategoryCode",
+      "value": ""
+    },
+    {
+      "key": "testSeverityCode",
+      "value": "99"
+    },
+    {
+      "key": "testErrorCode",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 系统 ErrorSystemController",
+      "description": "权限前缀：errorcode:system。执行到列表（测试数据）后会自动保存 systemId。",
+      "item": [
+        {
+          "name": "查询系统列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:system:list。支持 systemCode、systemName、description、status、时间范围和分页参数。",
+            "url": "{{baseUrl}}/errorcode/system/list?pageNum={{pageNum}}&pageSize={{pageSize}}&orderByColumn=id&isAsc=asc"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('rows 为数组', function () { pm.expect(body.rows).to.be.an('array'); });",
+                  "pm.test('total 为数字', function () { pm.expect(body.total).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "导出系统列表",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "权限：errorcode:system:export。响应为 Excel 文件。",
+            "url": "{{baseUrl}}/errorcode/system/export"
+          }
+        },
+        {
+          "name": "新增测试系统",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('testSystemCode', 'APIFOX_SYS_' + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:system:add。systemCode 每次运行自动生成，避免重复。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"systemCode\": \"{{testSystemCode}}\",\n  \"systemName\": \"Apifox 测试系统\",\n  \"description\": \"由 Apifox 自动化测试创建\",\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/system"
+          }
+        },
+        {
+          "name": "查询刚创建的系统",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "按本次运行生成的 systemCode 查询，并保存 systemId 供后续类别、错误码测试使用。",
+            "url": "{{baseUrl}}/errorcode/system/list?systemCode={{testSystemCode}}&pageNum=1&pageSize=10"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "const code = pm.collectionVariables.get('testSystemCode');",
+                  "const target = (body.rows || []).find(function (row) { return String(row.systemCode) === String(code); });",
+                  "pm.test('可以查询到刚创建的系统', function () { pm.expect(target).to.exist; });",
+                  "if (target) pm.collectionVariables.set('systemId', String(target.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "查询系统详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:system:query。",
+            "url": "{{baseUrl}}/errorcode/system/{{systemId}}"
+          }
+        },
+        {
+          "name": "修改测试系统",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:system:edit。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{systemId}},\n  \"systemCode\": \"{{testSystemCode}}\",\n  \"systemName\": \"Apifox 测试系统-已修改\",\n  \"description\": \"修改后的系统描述\",\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/system"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 类别 ErrorCategoryController",
+      "description": "权限前缀：errorcode:category。使用前一个目录创建的 systemId。",
+      "item": [
+        {
+          "name": "查询类别列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:category:list。使用 systemId、categoryCode、categoryName、description、status 进行筛选。",
+            "url": "{{baseUrl}}/errorcode/category/list?systemId={{systemId}}&pageNum={{pageNum}}&pageSize={{pageSize}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('rows 为数组', function () { pm.expect(body.rows).to.be.an('array'); });",
+                  "pm.test('total 为数字', function () { pm.expect(body.total).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "导出类别列表",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "权限：errorcode:category:export。响应为 Excel 文件。",
+            "url": "{{baseUrl}}/errorcode/category/export?systemId={{systemId}}"
+          }
+        },
+        {
+          "name": "新增测试类别",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('testCategoryCode', 'APIFOX_CAT_' + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:category:add。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"systemId\": {{systemId}},\n  \"categoryCode\": \"{{testCategoryCode}}\",\n  \"categoryName\": \"Apifox 测试类别\",\n  \"description\": \"由 Apifox 自动化测试创建\",\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/category"
+          }
+        },
+        {
+          "name": "查询刚创建的类别",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "按 systemId 和本次运行生成的 categoryCode 查询，并保存 categoryId。",
+            "url": "{{baseUrl}}/errorcode/category/list?systemId={{systemId}}&categoryCode={{testCategoryCode}}&pageNum=1&pageSize=10"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "const code = pm.collectionVariables.get('testCategoryCode');",
+                  "const target = (body.rows || []).find(function (row) { return String(row.categoryCode) === String(code); });",
+                  "pm.test('可以查询到刚创建的类别', function () { pm.expect(target).to.exist; });",
+                  "if (target) pm.collectionVariables.set('categoryId', String(target.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "查询类别详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:category:query。",
+            "url": "{{baseUrl}}/errorcode/category/{{categoryId}}"
+          }
+        },
+        {
+          "name": "修改测试类别",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:category:edit。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{categoryId}},\n  \"systemId\": {{systemId}},\n  \"categoryCode\": \"{{testCategoryCode}}\",\n  \"categoryName\": \"Apifox 测试类别-已修改\",\n  \"description\": \"修改后的类别描述\",\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/category"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 严重程度 ErrorSeverityController",
+      "description": "权限前缀：errorcode:severity。测试码默认为 99；当前 controller 和 DDL 未限制只能使用 1-4，便于重复运行后自动清理。",
+      "item": [
+        {
+          "name": "查询严重程度列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:severity:list。支持 severityCode、severityName、description、status 和分页参数。",
+            "url": "{{baseUrl}}/errorcode/severity/list?pageNum={{pageNum}}&pageSize={{pageSize}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('rows 为数组', function () { pm.expect(body.rows).to.be.an('array'); });",
+                  "pm.test('total 为数字', function () { pm.expect(body.total).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "导出严重程度列表",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "权限：errorcode:severity:export。响应为 Excel 文件。",
+            "url": "{{baseUrl}}/errorcode/severity/export"
+          }
+        },
+        {
+          "name": "新增测试严重程度",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:severity:add。severityCode 使用 99，避免和常见的 1-4 初始化数据冲突。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"severityCode\": {{testSeverityCode}},\n  \"severityName\": \"Apifox 测试严重程度\",\n  \"description\": \"由 Apifox 自动化测试创建\",\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/severity"
+          }
+        },
+        {
+          "name": "查询刚创建的严重程度",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "按测试 severityCode 查询，并保存 severityId。",
+            "url": "{{baseUrl}}/errorcode/severity/list?severityCode={{testSeverityCode}}&pageNum=1&pageSize=10"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "const code = pm.collectionVariables.get('testSeverityCode');",
+                  "const target = (body.rows || []).find(function (row) { return String(row.severityCode) === String(code); });",
+                  "pm.test('可以查询到刚创建的严重程度', function () { pm.expect(target).to.exist; });",
+                  "if (target) pm.collectionVariables.set('severityId', String(target.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "查询严重程度详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:severity:query。",
+            "url": "{{baseUrl}}/errorcode/severity/{{severityId}}"
+          }
+        },
+        {
+          "name": "修改测试严重程度",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:severity:edit。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{severityId}},\n  \"severityCode\": {{testSeverityCode}},\n  \"severityName\": \"Apifox 测试严重程度-已修改\",\n  \"description\": \"修改后的严重程度描述\",\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/severity"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 错误码 ErrorCodeController",
+      "description": "权限前缀：errorcode:code。使用前面目录创建的 systemId、categoryId 和 severityCode。",
+      "item": [
+        {
+          "name": "查询错误码列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:code:list。支持 systemId、categoryId、code、message、description、severity、status 和分页参数。",
+            "url": "{{baseUrl}}/errorcode/code/list?systemId={{systemId}}&categoryId={{categoryId}}&pageNum={{pageNum}}&pageSize={{pageSize}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('rows 为数组', function () { pm.expect(body.rows).to.be.an('array'); });",
+                  "pm.test('total 为数字', function () { pm.expect(body.total).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "导出错误码列表",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "description": "权限：errorcode:code:export。响应为 Excel 文件。",
+            "url": "{{baseUrl}}/errorcode/code/export?systemId={{systemId}}&categoryId={{categoryId}}"
+          }
+        },
+        {
+          "name": "新增测试错误码",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('testErrorCode', 'APIFOX_ERR_' + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:code:add。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"systemId\": {{systemId}},\n  \"categoryId\": {{categoryId}},\n  \"code\": \"{{testErrorCode}}\",\n  \"message\": \"Apifox 测试错误码\",\n  \"description\": \"由 Apifox 自动化测试创建\",\n  \"severity\": {{testSeverityCode}},\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/code"
+          }
+        },
+        {
+          "name": "查询刚创建的错误码",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "按 systemId、categoryId 和本次运行生成的 code 查询，并保存 errorCodeId。",
+            "url": "{{baseUrl}}/errorcode/code/list?systemId={{systemId}}&categoryId={{categoryId}}&code={{testErrorCode}}&pageNum=1&pageSize=10"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "const code = pm.collectionVariables.get('testErrorCode');",
+                  "const target = (body.rows || []).find(function (row) { return String(row.code) === String(code); });",
+                  "pm.test('可以查询到刚创建的错误码', function () { pm.expect(target).to.exist; });",
+                  "if (target) pm.collectionVariables.set('errorCodeId', String(target.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "查询错误码详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "权限：errorcode:code:query。",
+            "url": "{{baseUrl}}/errorcode/code/{{errorCodeId}}"
+          }
+        },
+        {
+          "name": "修改测试错误码",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "description": "权限：errorcode:code:edit。",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{errorCodeId}},\n  \"systemId\": {{systemId}},\n  \"categoryId\": {{categoryId}},\n  \"code\": \"{{testErrorCode}}\",\n  \"message\": \"Apifox 测试错误码-已修改\",\n  \"description\": \"修改后的错误码描述\",\n  \"severity\": {{testSeverityCode}},\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/errorcode/code"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 清理测试数据",
+      "description": "请在前面 4 个目录执行完成后运行。删除接口均为软删除，按依赖关系逆序清理本次自动创建的数据。",
+      "item": [
+        {
+          "name": "删除测试错误码（软删除）",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "权限：errorcode:code:remove。",
+            "url": "{{baseUrl}}/errorcode/code/{{errorCodeId}}"
+          }
+        },
+        {
+          "name": "删除测试类别（软删除）",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "权限：errorcode:category:remove。",
+            "url": "{{baseUrl}}/errorcode/category/{{categoryId}}"
+          }
+        },
+        {
+          "name": "删除测试系统（软删除）",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "权限：errorcode:system:remove。",
+            "url": "{{baseUrl}}/errorcode/system/{{systemId}}"
+          }
+        },
+        {
+          "name": "删除测试严重程度（软删除）",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "权限：errorcode:severity:remove。",
+            "url": "{{baseUrl}}/errorcode/severity/{{severityId}}"
+          }
+        }
+      ]
+    }
+  ]
+}
