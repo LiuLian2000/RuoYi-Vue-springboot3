@@ -35,7 +35,6 @@ import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.service.PasswordManageUserService;
-import com.ruoyi.system.service.impl.PasswordManageUserServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -153,9 +152,7 @@ public class SysUserController extends BaseController {
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SystemUserVo vo) {
         SysUser user = new SysUser();
-        PasswordManageUser passwordManageUser = new PasswordManageUser();
         BeanUtils.copyProperties(vo, user);
-        BeanUtils.copyProperties(vo, passwordManageUser);
 
         deptService.checkDeptDataScope(user.getDeptId());
         roleService.checkRoleDataScope(user.getRoleIds());
@@ -169,13 +166,11 @@ public class SysUserController extends BaseController {
             return error("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setCreateBy(getUsername());
-        System.out.println("------------------------------------------------");
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         userService.insertUser(user);
-        int userId = user.getUserId().intValue();
-        passwordManageUser.setSysUserId((long) userId);
-        passwordManageUserService.insertPasswordManageUser(passwordManageUser);
-        return toAjax(userId);
+        // 注意：密码管理器的 envelope（randomSalt/iv/cipher）由用户首次解锁时在前端生成，
+        // 并通过 POST /system/passwordManage/user 入库，此处不再预先插入空 envelope 记录。
+        return toAjax(user.getUserId().intValue());
     }
 
     /**
@@ -238,10 +233,14 @@ public class SysUserController extends BaseController {
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         user.setUpdateBy(getUsername());
 
+        // 仅当用户已初始化金库（存在 envelope 记录）时才重加密信封；
+        // 否则（如管理员重置尚未初始化用户的密码）跳过 envelope 更新，避免 NPE。
         PasswordManageUser temp = passwordManageUserService
                 .selectPasswordManageUserByUserId(user.getUserId());
-        passwordManageUser.setId(temp.getId());
-        passwordManageUserService.updatePasswordManageUser(passwordManageUser);
+        if (temp != null) {
+            passwordManageUser.setId(temp.getId());
+            passwordManageUserService.updatePasswordManageUser(passwordManageUser);
+        }
 
         return toAjax(userService.resetPwd(user));
     }
