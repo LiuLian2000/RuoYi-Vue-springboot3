@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.password_manage.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -11,8 +11,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * @author ruoyi
  * @date 2026-08-26
  */
-public class PasswordManageUserCredential extends BaseEntity
-{
+public class PasswordManageUserCredential extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /** $column.columnComment */
@@ -42,87 +41,73 @@ public class PasswordManageUserCredential extends BaseEntity
     @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private String passwordCipher;
 
-    public void setId(Long id) 
-    {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getId() 
-    {
+    public Long getId() {
         return id;
     }
 
-    public void setPasswordManageUserId(Long passwordManageUserId) 
-    {
+    public void setPasswordManageUserId(Long passwordManageUserId) {
         this.passwordManageUserId = passwordManageUserId;
     }
 
-    public Long getPasswordManageUserId() 
-    {
+    public Long getPasswordManageUserId() {
         return passwordManageUserId;
     }
 
-    public void setPlatformName(String platformName) 
-    {
+    public void setPlatformName(String platformName) {
         this.platformName = platformName;
     }
 
-    public String getPlatformName() 
-    {
+    public String getPlatformName() {
         return platformName;
     }
 
-    public void setAccountIv(String accountIv) 
-    {
+    public void setAccountIv(String accountIv) {
         this.accountIv = accountIv;
     }
 
-    public String getAccountIv() 
-    {
+    public String getAccountIv() {
         return accountIv;
     }
 
-    public void setAccountCipher(String accountCipher) 
-    {
+    public void setAccountCipher(String accountCipher) {
         this.accountCipher = accountCipher;
     }
 
-    public String getAccountCipher() 
-    {
+    public String getAccountCipher() {
         return accountCipher;
     }
 
-    public void setPasswordIv(String passwordIv) 
-    {
+    public void setPasswordIv(String passwordIv) {
         this.passwordIv = passwordIv;
     }
 
-    public String getPasswordIv() 
-    {
+    public String getPasswordIv() {
         return passwordIv;
     }
 
-    public void setPasswordCipher(String passwordCipher) 
-    {
+    public void setPasswordCipher(String passwordCipher) {
         this.passwordCipher = passwordCipher;
     }
 
-    public String getPasswordCipher() 
-    {
+    public String getPasswordCipher() {
         return passwordCipher;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("passwordManageUserId", getPasswordManageUserId())
-            .append("platformName", getPlatformName())
-            .append("accountIv", getAccountIv())
-            .append("accountCipher", getAccountCipher())
-            .append("passwordIv", getPasswordIv())
-            .append("passwordCipher", getPasswordCipher())
-            .append("createTime", getCreateTime())
-            .toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId())
+                .append("passwordManageUserId", getPasswordManageUserId())
+                .append("platformName", getPlatformName())
+                .append("accountIv", getAccountIv())
+                .append("accountCipher", getAccountCipher())
+                .append("passwordIv", getPasswordIv())
+                .append("passwordCipher", getPasswordCipher())
+                .append("createTime", getCreateTime())
+                .toString();
     }
 }

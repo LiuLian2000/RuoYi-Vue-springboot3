@@ -28,13 +28,13 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.domain.PasswordManageUser;
-import com.ruoyi.system.domain.vo.SystemUserVo;
+import com.ruoyi.password_manage.domain.PasswordManageUser;
+import com.ruoyi.password_manage.domain.vo.SystemUserVo;
+import com.ruoyi.password_manage.service.PasswordManageUserService;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.system.service.PasswordManageUserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 

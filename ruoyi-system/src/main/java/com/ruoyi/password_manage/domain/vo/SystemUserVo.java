@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain.vo;
+package com.ruoyi.password_manage.domain.vo;
 
 import java.util.Date;
 import java.util.List;

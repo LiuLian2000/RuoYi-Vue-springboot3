@@ -1,11 +1,12 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.password_manage.service.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.PasswordManageUserMapper;
-import com.ruoyi.system.domain.PasswordManageUser;
-import com.ruoyi.system.service.PasswordManageUserService;
+
+import com.ruoyi.password_manage.domain.PasswordManageUser;
+import com.ruoyi.password_manage.mapper.PasswordManageUserMapper;
+import com.ruoyi.password_manage.service.PasswordManageUserService;
 
 /**
  * 用户密码管理主，绑定系统的sys_userService业务层处理

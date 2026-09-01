@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.passwordManage;
+package com.ruoyi.password_manage.controller;
 
 import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,14 +17,14 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.PasswordManageUser;
-import com.ruoyi.system.domain.PasswordManageUserCredential;
-import com.ruoyi.system.service.IPasswordManageUserCredentialService;
-import com.ruoyi.system.service.PasswordManageUserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.password_manage.domain.PasswordManageUser;
+import com.ruoyi.password_manage.domain.PasswordManageUserCredential;
+import com.ruoyi.password_manage.service.IPasswordManageUserCredentialService;
+import com.ruoyi.password_manage.service.PasswordManageUserService;
 import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
@@ -86,7 +86,6 @@ public class PasswordManageUserCredentialController extends BaseController {
         PasswordManageUser pmUser = passwordManageUserService.selectPasswordManageUserByUserId(getUserId());
         return pmUser == null ? null : pmUser.getId();
     }
-
 
     /**
      * 获取用户密码管理凭据

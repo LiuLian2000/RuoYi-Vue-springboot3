@@ -1,12 +1,13 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.password_manage.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.password_manage.domain.PasswordManageUserCredential;
+import com.ruoyi.password_manage.mapper.PasswordManageUserCredentialMapper;
+import com.ruoyi.password_manage.service.IPasswordManageUserCredentialService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.PasswordManageUserCredentialMapper;
-import com.ruoyi.system.domain.PasswordManageUserCredential;
-import com.ruoyi.system.service.IPasswordManageUserCredentialService;
 
 /**
  * 用户密码管理子，绑定password_manage_userService业务层处理
@@ -15,8 +16,7 @@ import com.ruoyi.system.service.IPasswordManageUserCredentialService;
  * @date 2026-08-26
  */
 @Service
-public class PasswordManageUserCredentialServiceImpl implements IPasswordManageUserCredentialService 
-{
+public class PasswordManageUserCredentialServiceImpl implements IPasswordManageUserCredentialService {
     @Autowired
     private PasswordManageUserCredentialMapper passwordManageUserCredentialMapper;
 
@@ -27,8 +27,7 @@ public class PasswordManageUserCredentialServiceImpl implements IPasswordManageU
      * @return 用户密码管理子，绑定password_manage_user
      */
     @Override
-    public PasswordManageUserCredential selectPasswordManageUserCredentialById(Long id)
-    {
+    public PasswordManageUserCredential selectPasswordManageUserCredentialById(Long id) {
         return passwordManageUserCredentialMapper.selectPasswordManageUserCredentialById(id);
     }
 
@@ -39,8 +38,8 @@ public class PasswordManageUserCredentialServiceImpl implements IPasswordManageU
      * @return 用户密码管理子，绑定password_manage_user
      */
     @Override
-    public List<PasswordManageUserCredential> selectPasswordManageUserCredentialList(PasswordManageUserCredential passwordManageUserCredential)
-    {
+    public List<PasswordManageUserCredential> selectPasswordManageUserCredentialList(
+            PasswordManageUserCredential passwordManageUserCredential) {
         return passwordManageUserCredentialMapper.selectPasswordManageUserCredentialList(passwordManageUserCredential);
     }
 
@@ -51,8 +50,7 @@ public class PasswordManageUserCredentialServiceImpl implements IPasswordManageU
      * @return 结果
      */
     @Override
-    public int insertPasswordManageUserCredential(PasswordManageUserCredential passwordManageUserCredential)
-    {
+    public int insertPasswordManageUserCredential(PasswordManageUserCredential passwordManageUserCredential) {
         passwordManageUserCredential.setCreateTime(DateUtils.getNowDate());
         return passwordManageUserCredentialMapper.insertPasswordManageUserCredential(passwordManageUserCredential);
     }
@@ -64,8 +62,7 @@ public class PasswordManageUserCredentialServiceImpl implements IPasswordManageU
      * @return 结果
      */
     @Override
-    public int updatePasswordManageUserCredential(PasswordManageUserCredential passwordManageUserCredential)
-    {
+    public int updatePasswordManageUserCredential(PasswordManageUserCredential passwordManageUserCredential) {
         return passwordManageUserCredentialMapper.updatePasswordManageUserCredential(passwordManageUserCredential);
     }
 
@@ -76,8 +73,7 @@ public class PasswordManageUserCredentialServiceImpl implements IPasswordManageU
      * @return 结果
      */
     @Override
-    public int deletePasswordManageUserCredentialByIds(Long[] ids)
-    {
+    public int deletePasswordManageUserCredentialByIds(Long[] ids) {
         return passwordManageUserCredentialMapper.deletePasswordManageUserCredentialByIds(ids);
     }
 
@@ -88,8 +84,7 @@ public class PasswordManageUserCredentialServiceImpl implements IPasswordManageU
      * @return 结果
      */
     @Override
-    public int deletePasswordManageUserCredentialById(Long id)
-    {
+    public int deletePasswordManageUserCredentialById(Long id) {
         return passwordManageUserCredentialMapper.deletePasswordManageUserCredentialById(id);
     }
 }

@@ -1,7 +1,8 @@
-package com.ruoyi.system.service;
+package com.ruoyi.password_manage.service;
 
 import java.util.List;
-import com.ruoyi.system.domain.PasswordManageUser;
+
+import com.ruoyi.password_manage.domain.PasswordManageUser;
 
 /**
  * 用户密码管理主，绑定系统的sys_userService接口
