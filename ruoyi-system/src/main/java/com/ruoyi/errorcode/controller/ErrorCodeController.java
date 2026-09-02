@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
 import com.ruoyi.common.annotation.Log;
@@ -29,6 +33,9 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.errorcode.domain.ErrorCode;
+import com.ruoyi.errorcode.domain.response.ErrorCodeOpenApiResponses.ErrorCodeDetailResponse;
+import com.ruoyi.errorcode.domain.response.ErrorCodeOpenApiResponses.ErrorCodePageResponse;
+import com.ruoyi.errorcode.domain.response.ErrorCodeOpenApiResponses.OperationResponse;
 import com.ruoyi.errorcode.service.IErrorCodeYamlExportService;
 import com.ruoyi.errorcode.service.IErrorCodeService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -68,6 +75,9 @@ public class ErrorCodeController extends BaseController
         @Parameter(name = "params[beginUpdateTime]", description = "更新时间开始", in = ParameterIn.QUERY),
         @Parameter(name = "params[endUpdateTime]", description = "更新时间结束", in = ParameterIn.QUERY)
     })
+    @ApiResponse(responseCode = "200", description = "查询成功",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorCodePageResponse.class)))
     @GetMapping("/list")
     public TableDataInfo list(@ParameterObject ErrorCode errorCode)
     {
@@ -82,9 +92,19 @@ public class ErrorCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('errorcode:code:export')")
     @Log(title = "错误码", businessType = BusinessType.EXPORT)
     @Operation(summary = "导出错误码列表")
-    @PostMapping("/export")
+    @ApiResponse(responseCode = "200", description = "Excel 文件",
+            headers = @Header(name = HttpHeaders.CONTENT_DISPOSITION,
+                    description = "下载文件名",
+                    schema = @Schema(type = "string", example = "attachment; filename=\"error-codes.xlsx\"")),
+            content = @Content(mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    schema = @Schema(type = "string", format = "binary")))
+    @PostMapping(value = "/export", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     public void export(HttpServletResponse response, @ParameterObject ErrorCode errorCode)
     {
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                .filename("error-codes.xlsx")
+                .build()
+                .toString());
         List<ErrorCode> list = errorCodeService.selectErrorCodeList(errorCode);
         ExcelUtil<ErrorCode> util = new ExcelUtil<ErrorCode>(ErrorCode.class);
         util.exportExcel(response, list, "错误码数据");
@@ -96,7 +116,13 @@ public class ErrorCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('errorcode:code:export')")
     @Log(title = "错误码", businessType = BusinessType.EXPORT)
     @Operation(summary = "导出错误码 YAML 配置")
-    @PostMapping("/exportYaml")
+    @ApiResponse(responseCode = "200", description = "YAML 配置文件",
+            headers = @Header(name = HttpHeaders.CONTENT_DISPOSITION,
+                    description = "下载文件名",
+                    schema = @Schema(type = "string", example = "attachment; filename=\"error-codes.yml\"")),
+            content = @Content(mediaType = "application/x-yaml",
+                    schema = @Schema(type = "string", format = "binary")))
+    @PostMapping(value = "/exportYaml", produces = "application/x-yaml")
     public void exportYaml(HttpServletResponse response) throws IOException
     {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -113,6 +139,9 @@ public class ErrorCodeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('errorcode:code:query')")
     @Operation(summary = "获取错误码详情")
+    @ApiResponse(responseCode = "200", description = "查询成功",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorCodeDetailResponse.class)))
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@Parameter(description = "错误码ID", required = true)
                               @PathVariable("id") Long id)
@@ -126,6 +155,9 @@ public class ErrorCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('errorcode:code:add')")
     @Log(title = "错误码", businessType = BusinessType.INSERT)
     @Operation(summary = "新增错误码")
+    @ApiResponse(responseCode = "200", description = "操作结果",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = OperationResponse.class)))
     @PostMapping
     public AjaxResult add(@RequestBody ErrorCode errorCode)
     {
@@ -139,6 +171,9 @@ public class ErrorCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('errorcode:code:edit')")
     @Log(title = "错误码", businessType = BusinessType.UPDATE)
     @Operation(summary = "修改错误码")
+    @ApiResponse(responseCode = "200", description = "操作结果",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = OperationResponse.class)))
     @PutMapping
     public AjaxResult edit(@RequestBody ErrorCode errorCode)
     {
@@ -150,6 +185,9 @@ public class ErrorCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('errorcode:code:edit')")
     @Log(title = "错误码", businessType = BusinessType.UPDATE)
     @Operation(summary = "批量修改错误码", description = "最多100条；任意一条失败时整批回滚")
+    @ApiResponse(responseCode = "200", description = "操作结果",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = OperationResponse.class)))
     @PutMapping("/batch")
     public AjaxResult batchEdit(@RequestBody List<ErrorCode> errorCodes)
     {
@@ -168,6 +206,9 @@ public class ErrorCodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('errorcode:code:remove')")
     @Log(title = "错误码", businessType = BusinessType.DELETE)
     @Operation(summary = "删除错误码", description = "支持批量删除，多个错误码ID使用逗号分隔")
+	@ApiResponse(responseCode = "200", description = "操作结果",
+			content = @Content(mediaType = "application/json",
+					schema = @Schema(implementation = OperationResponse.class)))
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@Parameter(description = "错误码ID，多个使用逗号分隔", required = true)
                              @PathVariable Long[] ids)

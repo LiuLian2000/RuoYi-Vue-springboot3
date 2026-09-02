@@ -32,9 +32,11 @@ public class ErrorCode extends BaseEntity
     private String systemName;
 
     /** 所属系统编码（YAML 导出查询字段） */
+    @Schema(description = "所属系统编码", example = "ORDER")
     private String systemCode;
 
     /** 所属系统描述（YAML 导出查询字段） */
+    @Schema(description = "所属系统描述", example = "订单系统错误码")
     private String systemDescription;
 
     /** 所属类别ID */
@@ -48,9 +50,11 @@ public class ErrorCode extends BaseEntity
     private String categoryName;
 
     /** 所属类别编码（YAML 导出查询字段） */
+    @Schema(description = "所属类别编码", example = "PAYMENT")
     private String categoryCode;
 
     /** 所属类别描述（YAML 导出查询字段） */
+    @Schema(description = "所属类别描述", example = "支付相关错误码")
     private String categoryDescription;
 
     /** 错误码(如11001) */
