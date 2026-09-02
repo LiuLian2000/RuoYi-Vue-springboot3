@@ -115,6 +115,22 @@ public class ErrorSystemController extends BaseController
         return toAjax(errorSystemService.updateErrorSystem(errorSystem));
     }
 
+    /** 批量修改错误码所属系统。 */
+    @PreAuthorize("@ss.hasPermi('errorcode:system:edit')")
+    @Log(title = "错误码所属系统", businessType = BusinessType.UPDATE)
+    @Operation(summary = "批量修改错误码系统", description = "最多100条；任意一条失败时整批回滚")
+    @PutMapping("/batch")
+    public AjaxResult batchEdit(@RequestBody List<ErrorSystem> errorSystems)
+    {
+        String username = getUsername();
+        if (errorSystems != null)
+        {
+            errorSystems.stream().filter(item -> item != null)
+                    .forEach(item -> item.setUpdateBy(username));
+        }
+        return toAjax(errorSystemService.updateErrorSystemBatch(errorSystems));
+    }
+
     /**
      * 删除错误码所属系统
      */

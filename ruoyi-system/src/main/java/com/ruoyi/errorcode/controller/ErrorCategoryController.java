@@ -115,6 +115,22 @@ public class ErrorCategoryController extends BaseController
         return toAjax(errorCategoryService.updateErrorCategory(errorCategory));
     }
 
+    /** 批量修改错误码类别。 */
+    @PreAuthorize("@ss.hasPermi('errorcode:category:edit')")
+    @Log(title = "错误码类别", businessType = BusinessType.UPDATE)
+    @Operation(summary = "批量修改错误码类别", description = "最多100条；任意一条失败时整批回滚")
+    @PutMapping("/batch")
+    public AjaxResult batchEdit(@RequestBody List<ErrorCategory> errorCategories)
+    {
+        String username = getUsername();
+        if (errorCategories != null)
+        {
+            errorCategories.stream().filter(item -> item != null)
+                    .forEach(item -> item.setUpdateBy(username));
+        }
+        return toAjax(errorCategoryService.updateErrorCategoryBatch(errorCategories));
+    }
+
     /**
      * 删除错误码类别
      */

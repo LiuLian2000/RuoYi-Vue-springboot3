@@ -31,6 +31,12 @@ public class ErrorCode extends BaseEntity
     @Schema(description = "所属系统名称", example = "订单系统")
     private String systemName;
 
+    /** 所属系统编码（YAML 导出查询字段） */
+    private String systemCode;
+
+    /** 所属系统描述（YAML 导出查询字段） */
+    private String systemDescription;
+
     /** 所属类别ID */
     @Excel(name = "所属类别ID")
     @Schema(description = "所属类别ID", example = "1")
@@ -40,6 +46,12 @@ public class ErrorCode extends BaseEntity
     @Excel(name = "所属类别名称")
     @Schema(description = "所属类别名称", example = "支付类")
     private String categoryName;
+
+    /** 所属类别编码（YAML 导出查询字段） */
+    private String categoryCode;
+
+    /** 所属类别描述（YAML 导出查询字段） */
+    private String categoryDescription;
 
     /** 错误码(如11001) */
     @Excel(name = "错误码(如11001)")
@@ -56,10 +68,15 @@ public class ErrorCode extends BaseEntity
     @Schema(description = "错误详细说明", example = "根据订单号未查询到订单")
     private String description;
 
-    /** 严重程度:1提示 2警告 3错误 4致命 */
-    @Excel(name = "严重程度:1提示 2警告 3错误 4致命")
-    @Schema(description = "严重程度：1提示 2警告 3错误 4致命", example = "3")
-    private Integer severity;
+    /** 严重程度ID */
+    @Excel(name = "严重程度ID")
+    @Schema(description = "严重程度ID", example = "3")
+    private Long severityId;
+
+    /** 严重程度代码 */
+    @Excel(name = "严重程度代码")
+    @Schema(description = "严重程度代码", example = "3")
+    private Integer severityCode;
 
     /** 严重程度名称 */
     @Excel(name = "严重程度名称")
@@ -70,6 +87,10 @@ public class ErrorCode extends BaseEntity
     @Excel(name = "状态:1启用 0停用")
     @Schema(description = "状态：1启用 0停用", example = "1")
     private Integer status;
+
+    /** 乐观锁版本号 */
+    @Schema(description = "乐观锁版本号", example = "0")
+    private Integer version;
 
     /** 删除标志（0代表存在，删除时设置为本行ID） */
     @Schema(description = "逻辑删除标志", hidden = true)
@@ -105,6 +126,26 @@ public class ErrorCode extends BaseEntity
         return systemName;
     }
 
+    public String getSystemCode()
+    {
+        return systemCode;
+    }
+
+    public void setSystemCode(String systemCode)
+    {
+        this.systemCode = systemCode;
+    }
+
+    public String getSystemDescription()
+    {
+        return systemDescription;
+    }
+
+    public void setSystemDescription(String systemDescription)
+    {
+        this.systemDescription = systemDescription;
+    }
+
     public void setCategoryId(Long categoryId) 
     {
         this.categoryId = categoryId;
@@ -123,6 +164,26 @@ public class ErrorCode extends BaseEntity
     public String getCategoryName()
     {
         return categoryName;
+    }
+
+    public String getCategoryCode()
+    {
+        return categoryCode;
+    }
+
+    public void setCategoryCode(String categoryCode)
+    {
+        this.categoryCode = categoryCode;
+    }
+
+    public String getCategoryDescription()
+    {
+        return categoryDescription;
+    }
+
+    public void setCategoryDescription(String categoryDescription)
+    {
+        this.categoryDescription = categoryDescription;
     }
 
     public void setCode(String code) 
@@ -155,14 +216,24 @@ public class ErrorCode extends BaseEntity
         return description;
     }
 
-    public void setSeverity(Integer severity) 
+    public void setSeverityId(Long severityId)
     {
-        this.severity = severity;
+        this.severityId = severityId;
     }
 
-    public Integer getSeverity() 
+    public Long getSeverityId()
     {
-        return severity;
+        return severityId;
+    }
+
+    public void setSeverityCode(Integer severityCode)
+    {
+        this.severityCode = severityCode;
+    }
+
+    public Integer getSeverityCode()
+    {
+        return severityCode;
     }
 
     public void setSeverityName(String severityName)
@@ -185,6 +256,16 @@ public class ErrorCode extends BaseEntity
         return status;
     }
 
+    public void setVersion(Integer version)
+    {
+        this.version = version;
+    }
+
+    public Integer getVersion()
+    {
+        return version;
+    }
+
     public void setDelFlag(Long delFlag) 
     {
         this.delFlag = delFlag;
@@ -201,14 +282,20 @@ public class ErrorCode extends BaseEntity
             .append("id", getId())
             .append("systemId", getSystemId())
             .append("systemName", getSystemName())
+            .append("systemCode", getSystemCode())
+            .append("systemDescription", getSystemDescription())
             .append("categoryId", getCategoryId())
             .append("categoryName", getCategoryName())
+            .append("categoryCode", getCategoryCode())
+            .append("categoryDescription", getCategoryDescription())
             .append("code", getCode())
             .append("message", getMessage())
             .append("description", getDescription())
-            .append("severity", getSeverity())
+            .append("severityId", getSeverityId())
+            .append("severityCode", getSeverityCode())
             .append("severityName", getSeverityName())
             .append("status", getStatus())
+            .append("version", getVersion())
             .append("delFlag", getDelFlag())
             .append("createTime", getCreateTime())
             .append("updateTime", getUpdateTime())

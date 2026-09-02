@@ -27,6 +27,9 @@ public interface ErrorCategoryMapper
      */
     public List<ErrorCategory> selectErrorCategoryList(ErrorCategory errorCategory);
 
+    /** 按主键排序锁定未删除类别。 */
+    public List<ErrorCategory> selectErrorCategoriesByIdsForUpdate(Long[] ids);
+
     /**
      * 新增错误码类别
      * 
@@ -58,4 +61,10 @@ public interface ErrorCategoryMapper
      * @return 结果
      */
     public int deleteErrorCategoryByIds(Long[] ids);
+
+    /** 查询指定系统下未删除类别数量。 */
+    public int countErrorCategoriesBySystemIds(Long[] systemIds);
+
+    /** 查询指定系统下启用且未删除的类别数量。 */
+    public int countEnabledErrorCategoriesBySystemIds(Long[] systemIds);
 }

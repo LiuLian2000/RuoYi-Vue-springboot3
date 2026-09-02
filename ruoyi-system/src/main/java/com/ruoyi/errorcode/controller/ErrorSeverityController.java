@@ -115,6 +115,22 @@ public class ErrorSeverityController extends BaseController
         return toAjax(errorSeverityService.updateErrorSeverity(errorSeverity));
     }
 
+    /** 批量修改错误码严重程度。 */
+    @PreAuthorize("@ss.hasPermi('errorcode:severity:edit')")
+    @Log(title = "错误码严重程度", businessType = BusinessType.UPDATE)
+    @Operation(summary = "批量修改错误码严重程度", description = "最多100条；任意一条失败时整批回滚")
+    @PutMapping("/batch")
+    public AjaxResult batchEdit(@RequestBody List<ErrorSeverity> errorSeverities)
+    {
+        String username = getUsername();
+        if (errorSeverities != null)
+        {
+            errorSeverities.stream().filter(item -> item != null)
+                    .forEach(item -> item.setUpdateBy(username));
+        }
+        return toAjax(errorSeverityService.updateErrorSeverityBatch(errorSeverities));
+    }
+
     /**
      * 删除错误码严重程度
      */

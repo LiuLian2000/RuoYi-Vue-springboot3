@@ -43,6 +43,9 @@ public interface IErrorCategoryService
      */
     public int updateErrorCategory(ErrorCategory errorCategory);
 
+    /** 批量修改错误码类别，任意一条失败时整批回滚。 */
+    public int updateErrorCategoryBatch(List<ErrorCategory> errorCategories);
+
     /**
      * 批量删除错误码类别
      * 

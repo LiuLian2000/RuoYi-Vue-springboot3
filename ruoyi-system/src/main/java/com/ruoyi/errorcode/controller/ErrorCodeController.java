@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -46,7 +45,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 @Tag(name = "错误码管理", description = "错误码的增删改查接口")
 public class ErrorCodeController extends BaseController
 {
-    private static final ObjectMapper YAML_MAPPER = createYamlMapper();
+    private static final YAMLMapper YAML_MAPPER = createYamlMapper();
 
     @Autowired
     private IErrorCodeService errorCodeService;
@@ -103,7 +102,7 @@ public class ErrorCodeController extends BaseController
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType("application/x-yaml;charset=UTF-8");
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
-                .filename("error-codes.yml", StandardCharsets.UTF_8)
+                .filename("error-codes.yml")
                 .build()
                 .toString());
         YAML_MAPPER.writeValue(response.getOutputStream(), errorCodeYamlExportService.buildExportData());
@@ -147,6 +146,22 @@ public class ErrorCodeController extends BaseController
         return toAjax(errorCodeService.updateErrorCode(errorCode));
     }
 
+    /** 批量修改错误码。 */
+    @PreAuthorize("@ss.hasPermi('errorcode:code:edit')")
+    @Log(title = "错误码", businessType = BusinessType.UPDATE)
+    @Operation(summary = "批量修改错误码", description = "最多100条；任意一条失败时整批回滚")
+    @PutMapping("/batch")
+    public AjaxResult batchEdit(@RequestBody List<ErrorCode> errorCodes)
+    {
+        String username = getUsername();
+        if (errorCodes != null)
+        {
+            errorCodes.stream().filter(item -> item != null)
+                    .forEach(item -> item.setUpdateBy(username));
+        }
+        return toAjax(errorCodeService.updateErrorCodeBatch(errorCodes));
+    }
+
     /**
      * 删除错误码
      */
@@ -160,14 +175,14 @@ public class ErrorCodeController extends BaseController
         return toAjax(errorCodeService.deleteErrorCodeByIds(ids));
     }
 
-    private static ObjectMapper createYamlMapper()
+    private static YAMLMapper createYamlMapper()
     {
-        YAMLFactory yamlFactory = YAMLFactory.builder()
+        return YAMLMapper.builder()
                 .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
                 .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
+                .defaultPropertyInclusion(JsonInclude.Value.construct(
+                        JsonInclude.Include.NON_NULL,
+                        JsonInclude.Include.NON_NULL))
                 .build();
-        ObjectMapper mapper = new ObjectMapper(yamlFactory);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return mapper;
     }
 }

@@ -27,6 +27,9 @@ public interface ErrorSystemMapper
      */
     public List<ErrorSystem> selectErrorSystemList(ErrorSystem errorSystem);
 
+    /** 按主键排序锁定未删除系统。 */
+    public List<ErrorSystem> selectErrorSystemsByIdsForUpdate(Long[] ids);
+
     /**
      * 新增错误码所属系统
      * 
