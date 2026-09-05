@@ -8,6 +8,7 @@ import com.ruoyi.password_manage.service.IPasswordManageUserCredentialService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 用户密码管理子，绑定password_manage_userService业务层处理
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
  * @date 2026-08-26
  */
 @Service
+@Transactional
 public class PasswordManageUserCredentialServiceImpl implements IPasswordManageUserCredentialService {
     @Autowired
     private PasswordManageUserCredentialMapper passwordManageUserCredentialMapper;

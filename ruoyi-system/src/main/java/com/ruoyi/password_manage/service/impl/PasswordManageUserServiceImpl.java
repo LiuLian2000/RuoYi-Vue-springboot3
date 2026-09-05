@@ -3,6 +3,7 @@ package com.ruoyi.password_manage.service.impl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ruoyi.password_manage.domain.PasswordManageUser;
 import com.ruoyi.password_manage.mapper.PasswordManageUserMapper;
@@ -15,6 +16,7 @@ import com.ruoyi.password_manage.service.PasswordManageUserService;
  * @date 2026-08-26
  */
 @Service
+@Transactional
 public class PasswordManageUserServiceImpl implements PasswordManageUserService {
     @Autowired
     private PasswordManageUserMapper passwordManageUserMapper;

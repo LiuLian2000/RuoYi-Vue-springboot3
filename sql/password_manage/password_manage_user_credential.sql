@@ -4,14 +4,14 @@
  Source Server         : docker_ruoyi
  Source Server Type    : MySQL
  Source Server Version : 50744 (5.7.44)
- Source Host           : localhost:3307
+ Source Host           : localhost:3306
  Source Schema         : ry-vue
 
  Target Server Type    : MySQL
  Target Server Version : 50744 (5.7.44)
  File Encoding         : 65001
 
- Date: 28/08/2026 10:17:48
+ Date: 05/09/2026 14:13:36
 */
 
 SET NAMES utf8mb4;
@@ -34,6 +34,10 @@ CREATE TABLE `password_manage_user_credential`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_password_manage_user_id`(`password_manage_user_id`) USING BTREE,
   CONSTRAINT `fk_password_manage_user_id` FOREIGN KEY (`password_manage_user_id`) REFERENCES `password_manage_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户密码管理子表，绑定password_manage_user表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户密码管理子表，绑定password_manage_user表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of password_manage_user_credential
+-- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;

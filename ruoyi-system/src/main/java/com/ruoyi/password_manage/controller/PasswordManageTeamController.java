@@ -22,10 +22,9 @@ import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 import com.ruoyi.password_manage.service.IPasswordManageTeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 团队密码管理-团队密码Controller
@@ -42,42 +41,16 @@ public class PasswordManageTeamController extends BaseController {
 
     @Autowired
     private IPasswordManageTeamRoleService passwordManageTeamRoleService;
-    // /**
-    // * 查询团队密码管理-团队密码列表
-    // */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:list')")
-    // @GetMapping("/list")
-    // public TableDataInfo list(PasswordManageTeam passwordManageTeam)
-    // {
-    // startPage();
-    // List<PasswordManageTeam> list =
-    // passwordManageTeamService.selectPasswordManageTeamList(passwordManageTeam);
-    // return getDataTable(list);
-    // }
-
-    // /**
-    // * 导出团队密码管理-团队密码列表
-    // */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:export')")
-    // @Log(title = "团队密码管理-团队密码", businessType = BusinessType.EXPORT)
-    // @PostMapping("/export")
-    // public void export(HttpServletResponse response, PasswordManageTeam
-    // passwordManageTeam)
-    // {
-    // List<PasswordManageTeam> list =
-    // passwordManageTeamService.selectPasswordManageTeamList(passwordManageTeam);
-    // ExcelUtil<PasswordManageTeam> util = new
-    // ExcelUtil<PasswordManageTeam>(PasswordManageTeam.class);
-    // util.exportExcel(response, list, "团队密码管理-团队密码数据");
-    // }
 
     /**
      * 查询管理团队列表
+     * id 用户在password_manage_user中的id主键
      */
     @PreAuthorize("@ss.hasPermi('password_manage:team:list')")
-    @Operation(summary = "查询管理团队列表", description = "查询管理团队列表")
-    @GetMapping("/ManageTeamlist")
-    public AjaxResult getManageTeamlist(@PathVariable("id") Long id) {
+    @Operation(summary = "查询管理团队列表", description = "团队管理员依赖此接口查询个人管理团队列表")
+    @GetMapping("/ManageTeamlist/{id}")
+    public AjaxResult getManageTeamlist(
+            @Parameter(name = "用户id", description = "团队管理员在password_manage_user中的id", in = ParameterIn.PATH) @PathVariable("id") Long id) {
         startPage();
         List<PasswordManageTeam> list = passwordManageTeamService.selectPasswordManageTeamList(id);
         return AjaxResult.success(list);
@@ -90,7 +63,8 @@ public class PasswordManageTeamController extends BaseController {
     @PreAuthorize("@ss.hasPermi('password_manage:team:query')")
     @Operation(summary = "获取团队信息", description = "查询团队信息及团队密钥用于加解密")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id) {
+    public AjaxResult getInfo(
+            @Parameter(name = "团队id", description = "团队id", in = ParameterIn.PATH) @PathVariable("id") Long id) {
         return success(passwordManageTeamService.selectPasswordManageTeamById(id));
     }
 
@@ -99,8 +73,10 @@ public class PasswordManageTeamController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('password_manage:team:add')")
     @Log(title = "团队密码管理-新增团队", businessType = BusinessType.INSERT)
+    @Operation(summary = "新增团队", description = "新增团队，同时更新团队成员表")
     @PostMapping
-    public AjaxResult add(@RequestBody PasswordManageTeam passwordManageTeam) {
+    public AjaxResult add(
+            @Parameter(name = "团队", description = "passowrdMangeTeam对应实体", in = ParameterIn.DEFAULT) @RequestBody PasswordManageTeam passwordManageTeam) {
         int res = passwordManageTeamService.insertPasswordManageTeam(passwordManageTeam);
         PasswordManageTeamRole admin = new PasswordManageTeamRole();
         admin.setTeamId(passwordManageTeam.getId());
@@ -113,32 +89,26 @@ public class PasswordManageTeamController extends BaseController {
     }
 
     /**
-     * 团队密码管理-团队密码
+     * 团队密码管理-修改团队信息
      */
     @PreAuthorize("@ss.hasPermi('password_manage:team:edit')")
     @Log(title = "团队密码管理-团队密码", businessType = BusinessType.UPDATE)
+    @Operation(summary = "修改团队信息")
     @PutMapping
-    public AjaxResult edit(@RequestBody PasswordManageTeam passwordManageTeam) {
+    public AjaxResult edit(
+            @Parameter(name = "团队", description = "passowrdMangeTeam对应实体", in = ParameterIn.DEFAULT) @RequestBody PasswordManageTeam passwordManageTeam) {
         return toAjax(passwordManageTeamService.updatePasswordManageTeam(passwordManageTeam));
     }
-
-    // /**
-    // * 删除团队密码管理-团队密码
-    // */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:remove')")
-    // @Log(title = "团队密码管理-团队密码", businessType = BusinessType.DELETE)
-    // @DeleteMapping("/{ids}")
-    // public AjaxResult remove(@PathVariable Long[] ids) {
-    // return toAjax(passwordManageTeamService.deletePasswordManageTeamByIds(ids));
-    // }
 
     /**
      * 团队密码管理-删除团队,连携删除团队成员
      */
     @PreAuthorize("@ss.hasPermi('password_manage:team:remove')")
     @Log(title = "团队密码管理-团队密码", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long id) {
+    @Operation(summary = "删除团队", description = "删除团队，同时删除团队成员（此操作为物理删除）")
+    @DeleteMapping("/{id}")
+    public AjaxResult remove(
+            @Parameter(name = "团队id", description = "团队id", in = ParameterIn.PATH) @PathVariable Long id) {
         return toAjax(passwordManageTeamService.deletePasswordManageTeamById(id));
     }
 }

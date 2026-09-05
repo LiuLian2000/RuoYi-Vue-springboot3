@@ -1,10 +1,15 @@
 package com.ruoyi.password_manage.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
+import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 
@@ -15,8 +20,8 @@ import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
  * @date 2026-09-02
  */
 @Service
-public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRoleService 
-{
+@Transactional
+public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRoleService {
     @Autowired
     private PasswordManageTeamRoleMapper passwordManageTeamRoleMapper;
 
@@ -27,21 +32,19 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      * @return 用户在团队中的角色
      */
     @Override
-    public PasswordManageTeamRole selectPasswordManageTeamRoleById(Long id)
-    {
+    public PasswordManageTeamRole selectPasswordManageTeamRoleById(Long id) {
         return passwordManageTeamRoleMapper.selectPasswordManageTeamRoleById(id);
     }
 
     /**
-     * 查询用户在团队中的角色列表
+     * 查询团队中的所有成员列表
      * 
-     * @param passwordManageTeamRole 用户在团队中的角色
-     * @return 用户在团队中的角色
+     * @param id 团队id
+     * @return 团队中的所有成员列表
      */
     @Override
-    public List<PasswordManageTeamRole> selectPasswordManageTeamRoleList(PasswordManageTeamRole passwordManageTeamRole)
-    {
-        return passwordManageTeamRoleMapper.selectPasswordManageTeamRoleList(passwordManageTeamRole);
+    public List<SysUser> selectPasswordManageTeamRoleList(Long id) {
+        return passwordManageTeamRoleMapper.selectPasswordManageTeamRoleList(id);
     }
 
     /**
@@ -51,8 +54,7 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      * @return 结果
      */
     @Override
-    public int insertPasswordManageTeamRole(PasswordManageTeamRole passwordManageTeamRole)
-    {
+    public int insertPasswordManageTeamRole(PasswordManageTeamRole passwordManageTeamRole) {
         passwordManageTeamRole.setCreateTime(DateUtils.getNowDate());
         return passwordManageTeamRoleMapper.insertPasswordManageTeamRole(passwordManageTeamRole);
     }
@@ -64,33 +66,44 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      * @return 结果
      */
     @Override
-    public int updatePasswordManageTeamRole(PasswordManageTeamRole passwordManageTeamRole)
-    {
+    public int updatePasswordManageTeamRole(PasswordManageTeamRole passwordManageTeamRole) {
         passwordManageTeamRole.setUpdateTime(DateUtils.getNowDate());
         return passwordManageTeamRoleMapper.updatePasswordManageTeamRole(passwordManageTeamRole);
     }
 
+    // /**
+    // * 批量删除用户在团队中的角色
+    // *
+    // * @param ids 需要删除的用户在团队中的角色主键
+    // * @return 结果
+    // */
+    // @Override
+    // public int deletePasswordManageTeamRoleByIds(Long[] ids) {
+    // return passwordManageTeamRoleMapper.deletePasswordManageTeamRoleByIds(ids);
+    // }
+
     /**
-     * 批量删除用户在团队中的角色
+     * 删除团队中某用户
      * 
-     * @param ids 需要删除的用户在团队中的角色主键
+     * @param teamId 团队id
+     * @param userId 用户id
      * @return 结果
      */
     @Override
-    public int deletePasswordManageTeamRoleByIds(Long[] ids)
-    {
-        return passwordManageTeamRoleMapper.deletePasswordManageTeamRoleByIds(ids);
+    public int deletePasswordManageTeamRoleById(Long teamId, Long userId) {
+        return passwordManageTeamRoleMapper.deletePasswordManageTeamRoleById(teamId, userId);
     }
 
     /**
-     * 删除用户在团队中的角色信息
-     * 
-     * @param id 用户在团队中的角色主键
-     * @return 结果
+     * 获取所属团队列表
      */
     @Override
-    public int deletePasswordManageTeamRoleById(Long id)
-    {
-        return passwordManageTeamRoleMapper.deletePasswordManageTeamRoleById(id);
+    public List<PasswordManageTeam> selectPasswordManageTeamList(Long id) {
+        return passwordManageTeamRoleMapper.selectPasswordManageTeamList(id);
+    }
+
+    @Override
+    public Integer selectTeamRoleOfMember(Long teamId, long userId) {
+        return passwordManageTeamRoleMapper.selectTeamRoleOfMember(teamId, userId);
     }
 }

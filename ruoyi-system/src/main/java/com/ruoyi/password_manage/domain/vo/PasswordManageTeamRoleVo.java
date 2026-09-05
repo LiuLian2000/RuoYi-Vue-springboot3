@@ -1,20 +1,9 @@
-package com.ruoyi.password_manage.domain;
+package com.ruoyi.password_manage.domain.vo;
 
-import java.util.Date;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
-/**
- * 用户在团队中的角色对象 password_manage_team_role
- * 
- * @author DiZhicong
- * @date 2026-09-02
- */
-public class PasswordManageTeamRole extends BaseEntity {
-    private static final long serialVersionUID = 1L;
+public class PasswordManageTeamRoleVo extends BaseEntity {
 
     /** 主键 */
     private Long id;
@@ -43,67 +32,90 @@ public class PasswordManageTeamRole extends BaseEntity {
     @Excel(name = "是否删除")
     private Integer isDeleted;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    /** 操作人所在团队id */
+    private Long operatedTeamId;
+
+    /** 操作人的userid */
+    private Long operatedUserId;
 
     public Long getId() {
         return id;
     }
 
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTeamName() {
         return teamName;
     }
 
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
     }
 
     public Long getTeamId() {
         return teamId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 
     public String getUserName() {
         return userName;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Long getUserId() {
         return userId;
     }
 
-    public void setTeamRole(Integer teamRole) {
-        this.teamRole = teamRole;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Integer getTeamRole() {
         return teamRole;
     }
 
-    public void setIsDeleted(Integer isDeleted) {
-        this.isDeleted = isDeleted;
+    public void setTeamRole(Integer teamRole) {
+        this.teamRole = teamRole;
     }
 
     public Integer getIsDeleted() {
         return isDeleted;
     }
 
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public Long getOperatedTeamId() {
+        return operatedTeamId;
+    }
+
+    public void setOperatedTeamId(Long operatedTeamId) {
+        this.operatedTeamId = operatedTeamId;
+    }
+
+    public Long getOperatedUserId() {
+        return operatedUserId;
+    }
+
+    public void setOperatedUserId(Long operatedUserId) {
+        this.operatedUserId = operatedUserId;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("id", getId())
-                .append("teamName", getTeamName()).append("teamId", getTeamId()).append("userName", getUserName())
-                .append("userId", getUserId()).append("teamRole", getTeamRole()).append("isDeleted", getIsDeleted())
-                .append("createTime", getCreateTime()).append("updateTime", getUpdateTime()).toString();
+        return "PasswordManageTeamRoleVo [id=" + id + ", teamName=" + teamName + ", teamId=" + teamId + ", userName="
+                + userName + ", userId=" + userId + ", teamRole=" + teamRole + ", isDeleted=" + isDeleted
+                + ", operatedTeamId=" + operatedTeamId + ", operatedUserId=" + operatedUserId + ", getCreateTime()="
+                + getCreateTime() + "]";
     }
+
 }

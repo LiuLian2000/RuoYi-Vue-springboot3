@@ -37,9 +37,9 @@ public class PasswordManageTeam extends BaseEntity {
     @Excel(name = "团队密钥加密salt，前端传回，不予展示")
     private String randomSalt;
 
-    /** 团队密钥加密随机iv */
-    @Excel(name = "团队密钥加密随机iv，前端传回，不予展示")
-    private String encryptedTeamKeyIv;
+    /** 团队认证密码 */
+    @Excel(name = "团队认证密码,前端加密传回")
+    private String teamPassword;
 
     /** 团队密钥加密后密文 */
     @Excel(name = "团队密钥加密后密文，前端传回，不予展示")
@@ -97,12 +97,12 @@ public class PasswordManageTeam extends BaseEntity {
         return randomSalt;
     }
 
-    public void setEncryptedTeamKeyIv(String encryptedTeamKeyIv) {
-        this.encryptedTeamKeyIv = encryptedTeamKeyIv;
+    public String getTeamPassword() {
+        return teamPassword;
     }
 
-    public String getEncryptedTeamKeyIv() {
-        return encryptedTeamKeyIv;
+    public void setTeamPassword(String teamPassword) {
+        this.teamPassword = teamPassword;
     }
 
     public void setEncryptedTeamKeyCipher(String encryptedTeamKeyCipher) {
@@ -130,7 +130,7 @@ public class PasswordManageTeam extends BaseEntity {
                 .append("userName", getUserName())
                 .append("nickName", getNickName())
                 .append("randomSalt", getRandomSalt())
-                .append("encryptedTeamKeyIv", getEncryptedTeamKeyIv())
+                .append("teamPassword", getTeamPassword())
                 .append("encryptedTeamKeyCipher", getEncryptedTeamKeyCipher())
                 .append("remark", getRemark())
                 .append("createTime", getCreateTime())

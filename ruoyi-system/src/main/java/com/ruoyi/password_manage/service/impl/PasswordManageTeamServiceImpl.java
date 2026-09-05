@@ -4,6 +4,8 @@ import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ruoyi.password_manage.mapper.PasswordManageTeamMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
@@ -16,6 +18,7 @@ import com.ruoyi.password_manage.service.IPasswordManageTeamService;
  * @date 2026-09-01
  */
 @Service
+@Transactional
 public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService {
     @Autowired
     private PasswordManageTeamMapper passwordManageTeamMapper;

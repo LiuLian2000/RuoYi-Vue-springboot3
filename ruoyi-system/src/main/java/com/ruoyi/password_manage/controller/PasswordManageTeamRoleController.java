@@ -1,24 +1,30 @@
 package com.ruoyi.password_manage.controller;
 
 import java.util.List;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
+import com.ruoyi.password_manage.domain.vo.PasswordManageTeamRoleVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
-import com.ruoyi.common.utils.poi.ExcelUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+
 import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
@@ -29,76 +35,85 @@ import com.ruoyi.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/password_manage/role")
-public class PasswordManageTeamRoleController extends BaseController
-{
+public class PasswordManageTeamRoleController extends BaseController {
     @Autowired
     private IPasswordManageTeamRoleService passwordManageTeamRoleService;
 
     /**
-     * 查询用户在团队中的角色列表
+     * 查询某团队所有成员
+     * 
+     * @param id 团队id
+     * @return 团队内所有成员列表
      */
     @PreAuthorize("@ss.hasPermi('password_manage:role:list')")
     @GetMapping("/list")
-    public TableDataInfo list(PasswordManageTeamRole passwordManageTeamRole)
-    {
+    @Operation(summary = "获取团队成员列表", description = "获取团队成员列表")
+    public TableDataInfo list(
+            @Parameter(name = "团队id", in = ParameterIn.QUERY) @RequestParam Long teamId,
+            @Parameter(name = "操作人id", in = ParameterIn.QUERY) @RequestParam Long userId) {
+        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, userId);
+        if (role == null || 0 != role) {
+            TableDataInfo tableDataInfo = new TableDataInfo();
+            tableDataInfo.setCode(500);
+            tableDataInfo.setMsg("非团队管理员，无团队成员列表查看权限。");
+            return tableDataInfo;
+        }
         startPage();
-        List<PasswordManageTeamRole> list = passwordManageTeamRoleService.selectPasswordManageTeamRoleList(passwordManageTeamRole);
+        List<SysUser> list = passwordManageTeamRoleService.selectPasswordManageTeamRoleList(teamId);
         return getDataTable(list);
     }
 
     /**
-     * 导出用户在团队中的角色列表
-     */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:export')")
-    @Log(title = "用户在团队中的角色", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, PasswordManageTeamRole passwordManageTeamRole)
-    {
-        List<PasswordManageTeamRole> list = passwordManageTeamRoleService.selectPasswordManageTeamRoleList(passwordManageTeamRole);
-        ExcelUtil<PasswordManageTeamRole> util = new ExcelUtil<PasswordManageTeamRole>(PasswordManageTeamRole.class);
-        util.exportExcel(response, list, "用户在团队中的角色数据");
-    }
-
-    /**
-     * 获取用户在团队中的角色详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:query')")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
-        return success(passwordManageTeamRoleService.selectPasswordManageTeamRoleById(id));
-    }
-
-    /**
-     * 新增用户在团队中的角色
+     * 新增团队成员
      */
     @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
-    @Log(title = "用户在团队中的角色", businessType = BusinessType.INSERT)
+    @Log(title = "新增团队成员", businessType = BusinessType.INSERT)
+    @Operation(summary = "新增团队成员", description = "仅限管理员进行操作")
     @PostMapping
-    public AjaxResult add(@RequestBody PasswordManageTeamRole passwordManageTeamRole)
-    {
+    public AjaxResult add(@RequestBody PasswordManageTeamRoleVo vo) {
+        Long operatedUserId = vo.getOperatedUserId();
+        Long operatedTeamId = vo.getOperatedTeamId();
+        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(operatedTeamId, operatedUserId);
+        if (role == null || 0 != role) {
+            return AjaxResult.error("非团队管理员，无成员管理权限。");
+        }
+        PasswordManageTeamRole passwordManageTeamRole = new PasswordManageTeamRole();
+        BeanUtils.copyProperties(vo, passwordManageTeamRole);
+        passwordManageTeamRole.setTeamRole(1);
         return toAjax(passwordManageTeamRoleService.insertPasswordManageTeamRole(passwordManageTeamRole));
     }
 
-    /**
-     * 修改用户在团队中的角色
+    /***
+     * 删除团队中某成员
+     * 
+     * @param teamId        操作团队id
+     * @param deletedUserId 被删除团队成员的password_manage_user表id
+     * @param userId        操作人的password_manage_user表id
+     * @return
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:edit')")
-    @Log(title = "用户在团队中的角色", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody PasswordManageTeamRole passwordManageTeamRole)
-    {
-        return toAjax(passwordManageTeamRoleService.updatePasswordManageTeamRole(passwordManageTeamRole));
+    @PreAuthorize("@ss.hasPermi('password_manage:role:remove')")
+    @Log(title = "删除团队中某位成员", businessType = BusinessType.DELETE)
+    @Operation(summary = "删除团队成员")
+    @DeleteMapping("/remove")
+    public AjaxResult remove(@Parameter(name = "操作团队id") @RequestParam Long teamId,
+            @Parameter(name = "被删除队员的password_manage_user id") @RequestParam Long deletedUserId,
+            @Parameter(name = "操作人的password_manage_user id") @RequestParam Long userId) {
+        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, userId);
+        if (role == null || 0 != role) {
+            return AjaxResult.error("非操作团队管理员，无该团队成员管理权限。");
+        }
+        return toAjax(passwordManageTeamRoleService.deletePasswordManageTeamRoleById(teamId, deletedUserId));
     }
 
     /**
-     * 删除用户在团队中的角色
+     * 获取个人所在的团队列表
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:remove')")
-    @Log(title = "用户在团队中的角色", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(passwordManageTeamRoleService.deletePasswordManageTeamRoleByIds(ids));
+    @PreAuthorize("@ss.hasPermi('password_manage:role:team_list')")
+    @Operation(summary = "获取个人所属的团队列表")
+    @GetMapping("/MyTeam/{id}")
+    public TableDataInfo getTeamList(@Parameter(name = "操作人的password_manage_user id") @PathVariable("id") Long userId) {
+        startPage();
+        List<PasswordManageTeam> list = passwordManageTeamRoleService.selectPasswordManageTeamList(userId);
+        return getDataTable(list);
     }
 }
