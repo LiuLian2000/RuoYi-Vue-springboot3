@@ -34,7 +34,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RestController
 @RequestMapping("/password_manage/team")
-@Tag(name = "团队信息及teamKey管理")
 public class PasswordManageTeamController extends BaseController {
     @Autowired
     private IPasswordManageTeamService passwordManageTeamService;

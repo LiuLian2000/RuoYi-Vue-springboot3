@@ -127,6 +127,15 @@ springdoc:
       paths-to-match: '/errorcode/**'
       packages-to-scan: com.ruoyi.errorcode.controller
 
+    - group: 'password_manage'
+      display-name: '密码管理'
+      paths-to-match: 
+      - '/password_manage/**'
+      - '/system/passwordManage/**'
+      packages-to-scan: 
+      - com.ruoyi.password_manage.controller
+      - com.ruoyi.passwordManage.controller.tool
+
     - group: 'tool'
       display-name: '测试模块'
       paths-to-match: '/test/**'

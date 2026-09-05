@@ -32,7 +32,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * @date 2026-08-26
  */
 @RestController
-@RequestMapping("system/passwordManage/user")
+@RequestMapping("/system/passwordManage/user")
 public class PasswordManageUserController extends BaseController {
     @Autowired
     private PasswordManageUserService passwordManageUserService;

@@ -34,7 +34,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * @date 2026-08-26
  */
 @RestController
-@RequestMapping("system/passwordManage/credential")
+@RequestMapping("/system/passwordManage/credential")
 public class PasswordManageUserCredentialController extends BaseController {
     @Autowired
     private IPasswordManageUserCredentialService passwordManageUserCredentialService;
