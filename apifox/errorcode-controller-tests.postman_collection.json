@@ -464,14 +464,14 @@
     },
     {
       "name": "04 错误码 ErrorCodeController",
-      "description": "权限前缀：errorcode:code。使用前面目录创建的 systemId、categoryId 和 severityCode。",
+      "description": "权限前缀：errorcode:code。使用前面目录创建的 systemId、categoryId 和 severityId。",
       "item": [
         {
           "name": "查询错误码列表",
           "request": {
             "method": "GET",
             "header": [],
-            "description": "权限：errorcode:code:list。支持 systemId、categoryId、code、message、description、severity、status 和分页参数。",
+            "description": "权限：errorcode:code:list。支持 systemId、categoryId、code、message、description、severityId、severityCode、status 和分页参数。",
             "url": "{{baseUrl}}/errorcode/code/list?systemId={{systemId}}&categoryId={{categoryId}}&pageNum={{pageNum}}&pageSize={{pageSize}}"
           },
           "event": [
@@ -522,7 +522,7 @@
             "description": "权限：errorcode:code:add。",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"systemId\": {{systemId}},\n  \"categoryId\": {{categoryId}},\n  \"code\": \"{{testErrorCode}}\",\n  \"message\": \"Apifox 测试错误码\",\n  \"description\": \"由 Apifox 自动化测试创建\",\n  \"severity\": {{testSeverityCode}},\n  \"status\": 1\n}",
+              "raw": "{\n  \"systemId\": {{systemId}},\n  \"categoryId\": {{categoryId}},\n  \"code\": \"{{testErrorCode}}\",\n  \"message\": \"Apifox 测试错误码\",\n  \"description\": \"由 Apifox 自动化测试创建\",\n  \"severityId\": {{severityId}},\n  \"status\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -579,7 +579,7 @@
             "description": "权限：errorcode:code:edit。",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": {{errorCodeId}},\n  \"systemId\": {{systemId}},\n  \"categoryId\": {{categoryId}},\n  \"code\": \"{{testErrorCode}}\",\n  \"message\": \"Apifox 测试错误码-已修改\",\n  \"description\": \"修改后的错误码描述\",\n  \"severity\": {{testSeverityCode}},\n  \"status\": 1\n}",
+              "raw": "{\n  \"id\": {{errorCodeId}},\n  \"systemId\": {{systemId}},\n  \"categoryId\": {{categoryId}},\n  \"code\": \"{{testErrorCode}}\",\n  \"message\": \"Apifox 测试错误码-已修改\",\n  \"description\": \"修改后的错误码描述\",\n  \"severityId\": {{severityId}},\n  \"status\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"

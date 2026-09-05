@@ -43,6 +43,9 @@ public interface IErrorSystemService
      */
     public int updateErrorSystem(ErrorSystem errorSystem);
 
+    /** 批量修改错误码所属系统，任意一条失败时整批回滚。 */
+    public int updateErrorSystemBatch(List<ErrorSystem> errorSystems);
+
     /**
      * 批量删除错误码所属系统
      * 

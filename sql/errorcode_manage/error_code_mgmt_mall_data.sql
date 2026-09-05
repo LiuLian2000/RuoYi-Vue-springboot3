@@ -62,13 +62,13 @@ WHERE existing.id IS NULL;
 
 -- 4. 错误码
 INSERT INTO error_code
-    (system_id, category_id, code, message, description, severity, status)
+    (system_id, category_id, code, message, description, severity_id, status)
 SELECT system_data.id,
        category_data.id,
        sample.code,
        sample.message,
        sample.description,
-       sample.severity,
+       severity_data.id,
        sample.status
 FROM (
     SELECT 'MALL' AS system_code, 'PRODUCT' AS category_code, 'MALL-1001' AS code,
@@ -90,7 +90,10 @@ JOIN error_system system_data
 JOIN error_category category_data
     ON category_data.system_id = system_data.id
    AND category_data.category_code = sample.category_code
-   AND category_data.del_flag = 0
+    AND category_data.del_flag = 0
+JOIN error_severity severity_data
+    ON severity_data.severity_code = sample.severity
+   AND severity_data.del_flag = 0
 LEFT JOIN error_code existing
     ON existing.system_id = system_data.id
    AND existing.code = sample.code
@@ -140,7 +143,13 @@ SELECT @sample_create_log_id, sample.field_name, NULL, sample.new_value
 FROM (
     SELECT 'code' AS field_name, 'MALL-1001' AS new_value
     UNION ALL SELECT 'message', '商品不存在'
-    UNION ALL SELECT 'severity', '3'
+    UNION ALL SELECT 'severityId', (
+        SELECT CAST(id AS CHAR)
+        FROM error_severity
+        WHERE severity_code = 3
+          AND del_flag = 0
+        LIMIT 1
+    )
 ) AS sample
 WHERE @sample_create_log_id IS NOT NULL
   AND NOT EXISTS (

@@ -43,6 +43,9 @@ public interface IErrorCodeService
      */
     public int updateErrorCode(ErrorCode errorCode);
 
+    /** 批量修改错误码，任意一条失败时整批回滚。 */
+    public int updateErrorCodeBatch(List<ErrorCode> errorCodes);
+
     /**
      * 批量删除错误码
      * 

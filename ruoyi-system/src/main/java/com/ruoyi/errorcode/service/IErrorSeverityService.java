@@ -43,6 +43,9 @@ public interface IErrorSeverityService
      */
     public int updateErrorSeverity(ErrorSeverity errorSeverity);
 
+    /** 批量修改错误码严重程度，任意一条失败时整批回滚。 */
+    public int updateErrorSeverityBatch(List<ErrorSeverity> errorSeverities);
+
     /**
      * 批量删除错误码严重程度
      * 

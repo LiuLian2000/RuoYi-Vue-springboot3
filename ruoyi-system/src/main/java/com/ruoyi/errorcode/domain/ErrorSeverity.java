@@ -41,6 +41,10 @@ public class ErrorSeverity extends BaseEntity
     @Schema(description = "状态：1启用 0停用", example = "1")
     private Integer status;
 
+    /** 乐观锁版本号 */
+    @Schema(description = "乐观锁版本号", example = "0")
+    private Integer version;
+
     /** 删除标志（0代表存在，删除时设置为本行ID） */
     @Schema(description = "逻辑删除标志", hidden = true)
     private Long delFlag;
@@ -95,6 +99,16 @@ public class ErrorSeverity extends BaseEntity
         return status;
     }
 
+    public void setVersion(Integer version)
+    {
+        this.version = version;
+    }
+
+    public Integer getVersion()
+    {
+        return version;
+    }
+
     public void setDelFlag(Long delFlag) 
     {
         this.delFlag = delFlag;
@@ -113,6 +127,7 @@ public class ErrorSeverity extends BaseEntity
             .append("severityName", getSeverityName())
             .append("description", getDescription())
             .append("status", getStatus())
+            .append("version", getVersion())
             .append("delFlag", getDelFlag())
             .append("createTime", getCreateTime())
             .append("updateTime", getUpdateTime())

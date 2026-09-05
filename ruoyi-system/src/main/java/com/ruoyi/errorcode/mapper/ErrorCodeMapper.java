@@ -28,6 +28,13 @@ public interface ErrorCodeMapper
     public List<ErrorCode> selectErrorCodeList(ErrorCode errorCode);
 
     /**
+     * 查询可导出的有效错误码及其系统、类别信息。
+     *
+     * @return 有效错误码集合
+     */
+    public List<ErrorCode> selectEnabledErrorCodeExportList();
+
+    /**
      * 新增错误码
      * 
      * @param errorCode 错误码
@@ -58,4 +65,22 @@ public interface ErrorCodeMapper
      * @return 结果
      */
     public int deleteErrorCodeByIds(Long[] ids);
+
+    /** 查询指定系统下未删除错误码数量。 */
+    public int countErrorCodesBySystemIds(Long[] systemIds);
+
+    /** 查询指定类别下未删除错误码数量。 */
+    public int countErrorCodesByCategoryIds(Long[] categoryIds);
+
+    /** 查询引用指定严重程度ID的未删除错误码数量。 */
+    public int countErrorCodesBySeverityIds(Long[] severityIds);
+
+    /** 查询指定系统下启用且未删除的错误码数量。 */
+    public int countEnabledErrorCodesBySystemIds(Long[] systemIds);
+
+    /** 查询指定类别下启用且未删除的错误码数量。 */
+    public int countEnabledErrorCodesByCategoryIds(Long[] categoryIds);
+
+    /** 查询引用指定严重程度ID的启用且未删除错误码数量。 */
+    public int countEnabledErrorCodesBySeverityIds(Long[] severityIds);
 }

@@ -27,6 +27,9 @@ public interface ErrorSeverityMapper
      */
     public List<ErrorSeverity> selectErrorSeverityList(ErrorSeverity errorSeverity);
 
+    /** 按主键排序锁定未删除严重程度。 */
+    public List<ErrorSeverity> selectErrorSeveritiesByIdsForUpdate(Long[] ids);
+
     /**
      * 新增错误码严重程度
      * 

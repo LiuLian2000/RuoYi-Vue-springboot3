@@ -37,6 +37,7 @@ CREATE TABLE error_system (
     system_name VARCHAR(128) NOT NULL COMMENT '系统名称',
     description VARCHAR(512)          COMMENT '系统描述',
     status      TINYINT      NOT NULL DEFAULT 1 COMMENT '状态:1启用 0停用',
+    version     INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
     del_flag    BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除标志（0代表存在，删除时设置为本行ID）',
     create_by   VARCHAR(64)  DEFAULT NULL COMMENT '创建者',
     create_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -75,6 +76,7 @@ CREATE TABLE error_category (
     category_name VARCHAR(128) NOT NULL COMMENT '类别名称',
     description   VARCHAR(512)          COMMENT '类别描述',
     status        TINYINT      NOT NULL DEFAULT 1 COMMENT '状态:1启用 0停用',
+    version       INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
     del_flag      BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除标志（0代表存在，删除时设置为本行ID）',
     create_by     VARCHAR(64)  DEFAULT NULL COMMENT '创建者',
     create_time   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -86,8 +88,8 @@ CREATE TABLE error_category (
 
 -- ------------------------------------------------------------
 -- 3. 严重程度表: 错误码的严重程度字典
---    [后端处理] error_code.severity -> error_severity.severity_code
---      新增/修改错误码: 校验 severity 在字典中存在且启用
+--    [后端处理] error_code.severity_id -> error_severity.id
+--      新增/修改错误码: 校验 severity_id 对应记录存在且启用
 --      删除/停用严重程度: 先校验无错误码引用
 -- ------------------------------------------------------------
 CREATE TABLE error_severity (
@@ -96,6 +98,7 @@ CREATE TABLE error_severity (
     severity_name VARCHAR(32)  NOT NULL COMMENT '严重程度名称',
     description   VARCHAR(255)          COMMENT '描述',
     status        TINYINT      NOT NULL DEFAULT 1 COMMENT '状态:1启用 0停用',
+    version       INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
     del_flag      BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除标志（0代表存在，删除时设置为本行ID）',
     create_by     VARCHAR(64)  DEFAULT NULL COMMENT '创建者',
     create_time   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -115,8 +118,8 @@ CREATE TABLE error_severity (
 --      ★ 重点: 原复合外键(类别必须属于该系统)已移除,
 --         后端必须校验: 所填 category 的 system_id == 错误码的 system_id,
 --         否则会出现"前台的类别挂到后台的错误码上"这类脏数据
---    [后端处理] error_code.severity -> error_severity.severity_code
---      新增/修改错误码: 校验 severity 在字典中存在且启用
+--    [后端处理] error_code.severity_id -> error_severity.id
+--      新增/修改错误码: 校验 severity_id 对应记录存在且启用
 --      删除类别       : 先校验该类别下无错误码
 -- ------------------------------------------------------------
 CREATE TABLE error_code (
@@ -126,8 +129,9 @@ CREATE TABLE error_code (
     code        VARCHAR(32)  NOT NULL COMMENT '错误码(如11001)',
     message     VARCHAR(255) NOT NULL COMMENT '错误提示信息',
     description VARCHAR(512)          COMMENT '错误详细说明',
-    severity    TINYINT      NOT NULL DEFAULT 3 COMMENT '严重程度:1提示 2警告 3错误 4致命',
+    severity_id BIGINT UNSIGNED NOT NULL COMMENT '严重程度ID',
     status      TINYINT      NOT NULL DEFAULT 1 COMMENT '状态:1启用 0停用',
+    version     INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
     del_flag    BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除标志（0代表存在，删除时设置为本行ID）',
     create_by   VARCHAR(64)  DEFAULT NULL COMMENT '创建者',
     create_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -136,7 +140,7 @@ CREATE TABLE error_code (
     PRIMARY KEY (id),
     UNIQUE KEY uk_system_code (system_id, code, del_flag),
     KEY idx_category_id (category_id),
-    KEY idx_severity (severity)
+    KEY idx_severity_id (severity_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='错误码表';
 
 -- ------------------------------------------------------------
@@ -178,4 +182,3 @@ CREATE TABLE error_code_log_detail (
     PRIMARY KEY (id),
     KEY idx_detail_log (log_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='错误码修改记录字段明细表';
-
