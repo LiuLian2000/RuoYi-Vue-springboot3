@@ -1,14 +1,20 @@
 package com.ruoyi.password_manage.service.impl;
 
 import java.util.List;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ruoyi.password_manage.domain.PasswordManageTeam;
+import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
+import com.ruoyi.password_manage.domain.PasswordManageUser;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
-import com.ruoyi.password_manage.domain.PasswordManageTeam;
+import com.ruoyi.password_manage.mapper.PasswordManageUserMapper;
 import com.ruoyi.password_manage.service.IPasswordManageTeamService;
 
 /**
@@ -25,6 +31,9 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
 
     @Autowired
     private PasswordManageTeamRoleMapper passwordManageTeamRoleMapper;
+
+    @Autowired
+    private PasswordManageUserMapper passwordManageUserMapper;
 
     /**
      * 查询团队密码管理-团队密码
@@ -56,8 +65,31 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
      */
     @Override
     public int insertPasswordManageTeam(PasswordManageTeam passwordManageTeam) {
+        // 自动填充创建人信息（基于当前登录用户），不依赖前端传值
+        // create_user_id 绑定 password_manage_user.id（个人密码库主键），而非 sys_user.id
+        Long sysUserId = SecurityUtils.getUserId();
+        PasswordManageUser pmu = passwordManageUserMapper.selectPasswordManageUserByUserId(sysUserId);
+        if (pmu == null) {
+            throw new ServiceException("当前用户尚未初始化个人密码库，无法创建团队");
+        }
+        passwordManageTeam.setCreateUserId(pmu.getId());
+        SysUser sysUser = SecurityUtils.getLoginUser().getUser();
+        passwordManageTeam.setUserName(sysUser.getUserName());
+        passwordManageTeam.setNickName(sysUser.getNickName());
         passwordManageTeam.setCreateTime(DateUtils.getNowDate());
-        return passwordManageTeamMapper.insertPasswordManageTeam(passwordManageTeam);
+        int rows = passwordManageTeamMapper.insertPasswordManageTeam(passwordManageTeam);
+
+        // 创建者自动成为该团队的管理员（team_role = 0）
+        PasswordManageTeamRole creatorRole = new PasswordManageTeamRole();
+        creatorRole.setTeamId(passwordManageTeam.getId());
+        creatorRole.setUserId(pmu.getId());
+        creatorRole.setUserName(sysUser.getUserName());
+        creatorRole.setTeamName(passwordManageTeam.getTeamName());
+        creatorRole.setTeamRole(0);
+        creatorRole.setIsDeleted(0);
+        passwordManageTeamRoleMapper.insertPasswordManageTeamRole(creatorRole);
+
+        return rows;
     }
 
     /**

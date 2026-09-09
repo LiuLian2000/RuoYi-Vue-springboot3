@@ -71,16 +71,45 @@ public class PasswordManageTeamRoleController extends BaseController {
     @Operation(summary = "新增团队成员", description = "仅限管理员进行操作")
     @PostMapping
     public AjaxResult add(@RequestBody PasswordManageTeamRoleVo vo) {
-        Long operatedUserId = vo.getOperatedUserId();
-        Long operatedTeamId = vo.getOperatedTeamId();
-        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(operatedTeamId, operatedUserId);
+        Long operatorId = vo.getOperatedUserId();
+        Long memberId = vo.getUserId();
+        Long teamId = vo.getOperatedTeamId();
+        if (memberId == null) {
+            return AjaxResult.error("请选择要添加的成员");
+        }
+        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, operatorId);
         if (role == null || 0 != role) {
             return AjaxResult.error("非团队管理员，无成员管理权限。");
         }
         PasswordManageTeamRole passwordManageTeamRole = new PasswordManageTeamRole();
         BeanUtils.copyProperties(vo, passwordManageTeamRole);
+        passwordManageTeamRole.setTeamId(teamId);
+        passwordManageTeamRole.setUserId(memberId);
         passwordManageTeamRole.setTeamRole(1);
         return toAjax(passwordManageTeamRoleService.insertPasswordManageTeamRole(passwordManageTeamRole));
+    }
+
+    /**
+     * 获取可添加的成员候选列表（有个人金库、且尚未加入该团队的用户）
+     */
+    @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
+    @Operation(summary = "获取可添加的成员候选列表")
+    @GetMapping("/candidates")
+    public AjaxResult candidates(
+            @Parameter(name = "团队id", in = ParameterIn.QUERY) @RequestParam Long teamId) {
+        return AjaxResult.success(passwordManageTeamRoleService.selectCandidateMembers(teamId));
+    }
+
+    /**
+     * 查询某用户在指定团队中的角色（0-admin，1-member），非成员返回 null
+     */
+    @PreAuthorize("@ss.hasPermi('password_manage:role:list')")
+    @Operation(summary = "查询用户在团队中的角色")
+    @GetMapping("/roleOfMember")
+    public AjaxResult roleOfMember(
+            @Parameter(name = "团队id") @RequestParam Long teamId,
+            @Parameter(name = "操作人的password_manage_user id") @RequestParam Long userId) {
+        return AjaxResult.success(passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, userId));
     }
 
     /***

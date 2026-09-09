@@ -122,6 +122,10 @@ public class PasswordManageTeamCredentialController extends BaseController {
         }
         PasswordManageTeamCredential passwordManageTeamCredential = new PasswordManageTeamCredential();
         BeanUtils.copyProperties(vo, passwordManageTeamCredential);
+        // 凭据归属团队：前端以 operatedTeamId 传入，VO 的 teamId 可能为 null，需兜底
+        if (passwordManageTeamCredential.getTeamId() == null) {
+            passwordManageTeamCredential.setTeamId(vo.getOperatedTeamId());
+        }
         return toAjax(
                 passwordManageTeamCredentialService.insertPasswordManageTeamCredential(passwordManageTeamCredential));
     }
@@ -142,6 +146,9 @@ public class PasswordManageTeamCredentialController extends BaseController {
         }
         PasswordManageTeamCredential passwordManageTeamCredential = new PasswordManageTeamCredential();
         BeanUtils.copyProperties(vo, passwordManageTeamCredential);
+        if (passwordManageTeamCredential.getTeamId() == null) {
+            passwordManageTeamCredential.setTeamId(vo.getOperatedTeamId());
+        }
         return toAjax(
                 passwordManageTeamCredentialService.updatePasswordManageTeamCredential(passwordManageTeamCredential));
     }

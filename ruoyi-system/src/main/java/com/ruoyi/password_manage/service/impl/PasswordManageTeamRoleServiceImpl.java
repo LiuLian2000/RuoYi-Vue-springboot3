@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
+import com.ruoyi.password_manage.domain.vo.PasswordManageMemberVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 
 /**
@@ -45,6 +46,11 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
     @Override
     public List<SysUser> selectPasswordManageTeamRoleList(Long id) {
         return passwordManageTeamRoleMapper.selectPasswordManageTeamRoleList(id);
+    }
+
+    @Override
+    public List<PasswordManageMemberVo> selectCandidateMembers(Long teamId) {
+        return passwordManageTeamRoleMapper.selectCandidateMembers(teamId);
     }
 
     /**
