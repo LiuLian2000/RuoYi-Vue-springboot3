@@ -74,18 +74,10 @@ public class PasswordManageTeamController extends BaseController {
     @Log(title = "团队密码管理-新增团队", businessType = BusinessType.INSERT)
     @Operation(summary = "新增团队", description = "新增团队，同时更新团队成员表")
     @PostMapping
-    public AjaxResult add(
-            @Parameter(name = "团队", description = "passowrdMangeTeam对应实体", in = ParameterIn.DEFAULT) @RequestBody PasswordManageTeam passwordManageTeam) {
-        int res = passwordManageTeamService.insertPasswordManageTeam(passwordManageTeam);
-        PasswordManageTeamRole admin = new PasswordManageTeamRole();
-        admin.setTeamId(passwordManageTeam.getId());
-        admin.setTeamName(passwordManageTeam.getTeamName());
-        admin.setUserId(passwordManageTeam.getCreateUserId());
-        admin.setUserName(passwordManageTeam.getUserName());
-        admin.setTeamRole(0);
-        passwordManageTeamRoleService.insertPasswordManageTeamRole(admin);
-        return toAjax(res);
+    public AjaxResult add(@RequestBody PasswordManageTeam passwordManageTeam) {
+        return toAjax(passwordManageTeamService.insertPasswordManageTeam(passwordManageTeam));
     }
+
 
     /**
      * 团队密码管理-修改团队信息

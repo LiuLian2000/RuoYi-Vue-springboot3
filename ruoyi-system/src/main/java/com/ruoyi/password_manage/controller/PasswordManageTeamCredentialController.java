@@ -17,7 +17,6 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamCredential;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamCredentialVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamCredentialService;
@@ -59,19 +58,11 @@ public class PasswordManageTeamCredentialController extends BaseController {
     public TableDataInfo list(@Parameter(name = "团队身份密码") @RequestParam String authPassword,
             @Parameter(name = "团队id") @RequestParam Long teamId,
             @Parameter(name = "操作人的password_manage_user id") @RequestParam Long userId) {
-        PasswordManageTeam team = passwordManageTeamService.selectPasswordManageTeamById(teamId);
         Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, userId);
         if (role == null) {
             TableDataInfo tableDataInfo = new TableDataInfo();
             tableDataInfo.setCode(500);
             tableDataInfo.setMsg("非团队成员，无凭据查看权限。");
-            return tableDataInfo;
-        }
-        // 校验团队密码
-        if (!team.getTeamPassword().equals(authPassword)) {
-            TableDataInfo tableDataInfo = new TableDataInfo();
-            tableDataInfo.setCode(500);
-            tableDataInfo.setMsg("用户密码登陆错误");
             return tableDataInfo;
         }
         startPage();
@@ -96,11 +87,6 @@ public class PasswordManageTeamCredentialController extends BaseController {
         Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, userId);
         if (role == null) {
             return AjaxResult.error("非团队成员，无凭据查看权限。");
-        }
-        // 校验团队密码
-        PasswordManageTeam team = passwordManageTeamService.selectPasswordManageTeamById(teamId);
-        if (!team.getTeamPassword().equals(authPassword)) {
-            return AjaxResult.error("团队密码验证错误。");
         }
         return success(
                 passwordManageTeamCredentialService.selectPasswordManageTeamCredential(teamId, platName));
