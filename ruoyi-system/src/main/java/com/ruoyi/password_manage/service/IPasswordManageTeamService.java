@@ -2,6 +2,7 @@ package com.ruoyi.password_manage.service;
 
 import java.util.List;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
+import com.ruoyi.password_manage.domain.vo.PasswordManageTeamVo;
 
 /**
  * 团队密码管理-团队密码Service接口
@@ -24,7 +25,7 @@ public interface IPasswordManageTeamService {
      * @param id 用户id
      * @return 管理团队信息集合
      */
-    public List<PasswordManageTeam> selectPasswordManageTeamList(Long id);
+    public List<PasswordManageTeam> selectManageTeamList(Long id);
 
     /**
      * 新增团队密码管理-团队密码
@@ -32,11 +33,11 @@ public interface IPasswordManageTeamService {
      * @param passwordManageTeam 团队密码管理-团队密码
      * @return 结果
      */
-    public int insertPasswordManageTeam(PasswordManageTeam passwordManageTeam);
+    public Long insertPasswordManageTeam(PasswordManageTeamVo vo);
 
     /**
-     * 修改团队密码管理-团队密码
-     * 
+     * 修改团队信息
+     *
      * @param passwordManageTeam 团队密码管理-团队密码
      * @return 结果
      */
@@ -51,10 +52,18 @@ public interface IPasswordManageTeamService {
     public int deletePasswordManageTeamByIds(Long[] ids);
 
     /**
-     * 删除团队密码管理-团队密码信息
+     * 删除团队
      * 
      * @param id 团队密码管理-团队密码主键
      * @return 结果
      */
-    public int deletePasswordManageTeamById(Long id);
+    public int deletePasswordManageTeamById(Long teamId);
+
+    /**
+     * 查询以成员身份所在的团队列表
+     * 
+     * @param passwordManageUserId
+     * @return
+     */
+    public List<PasswordManageTeam> selectTeamList(Long passwordManageUserId);
 }

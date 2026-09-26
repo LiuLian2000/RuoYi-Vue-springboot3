@@ -32,7 +32,7 @@ public interface IPasswordManageTeamCredentialService {
      * @param passwordManageTeamCredential
      * @return
      */
-    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredential(
+    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredentialFuzzyList(
             Long teamId, String platName);
 
     /**

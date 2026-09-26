@@ -1,9 +1,5 @@
 package com.ruoyi.password_manage.domain;
 
-import java.util.Date;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
@@ -38,6 +34,21 @@ public class PasswordManageTeamRole extends BaseEntity {
     /** 该成员在团队中的角色，0-admin，1-mebmer */
     @Excel(name = "该成员在团队中的角色，0-admin，1-mebmer")
     private Integer teamRole;
+
+    /**
+     * 用户加密团队金库密钥所使用的随机盐
+     */
+    private String randomSalt;
+
+    /**
+     * 用户加密团队金库密钥所使用的随机向量
+     */
+    private String randomIv;
+
+    /**
+     * 用户加密团队金库密钥后的密文
+     */
+    private String teamValutKeyEncryptedCipher;
 
     /** 是否删除 */
     @Excel(name = "是否删除")
@@ -99,11 +110,36 @@ public class PasswordManageTeamRole extends BaseEntity {
         return isDeleted;
     }
 
+    public String getRandomSalt() {
+        return randomSalt;
+    }
+
+    public void setRandomSalt(String randomSalt) {
+        this.randomSalt = randomSalt;
+    }
+
+    public String getRandomIv() {
+        return randomIv;
+    }
+
+    public void setRandomIv(String randomIv) {
+        this.randomIv = randomIv;
+    }
+
+    public String getTeamValutKeyEncryptedCipher() {
+        return teamValutKeyEncryptedCipher;
+    }
+
+    public void setTeamValutKeyEncryptedCipher(String teamValutKeyEncryptedCipher) {
+        this.teamValutKeyEncryptedCipher = teamValutKeyEncryptedCipher;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("id", getId())
-                .append("teamName", getTeamName()).append("teamId", getTeamId()).append("userName", getUserName())
-                .append("userId", getUserId()).append("teamRole", getTeamRole()).append("isDeleted", getIsDeleted())
-                .append("createTime", getCreateTime()).append("updateTime", getUpdateTime()).toString();
+        return "PasswordManageTeamRole [id=" + id + ", teamName=" + teamName + ", teamId=" + teamId + ", userName="
+                + userName + ", userId=" + userId + ", teamRole=" + teamRole + ", randomSalt=" + randomSalt
+                + ", randomIv=" + randomIv + ", teamValutKeyEncryptedCipher=" + teamValutKeyEncryptedCipher
+                + ", isDeleted=" + isDeleted + "]";
     }
+
 }

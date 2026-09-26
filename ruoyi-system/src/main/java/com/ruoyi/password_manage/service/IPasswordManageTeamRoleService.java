@@ -6,21 +6,34 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.vo.PasswordManageMemberVo;
+import com.ruoyi.password_manage.domain.vo.PasswordManageTeamRoleVo;
+import com.ruoyi.password_manage.domain.vo.TeamCreatorRoleVo;
 
 /**
+ * 
  * 用户在团队中的角色Service接口
  * 
  * @author DiZhicong
  * @date 2026-09-02
  */
+// TODO 后续应该改造为用户在团队中的信息
 public interface IPasswordManageTeamRoleService {
     /**
-     * 查询用户在团队中的角色
+     * 查询用户在团队中的角色信息
      * 
      * @param id 用户在团队中的角色主键
      * @return 用户在团队中的角色
      */
     public PasswordManageTeamRole selectPasswordManageTeamRoleById(Long id);
+
+    /**
+     * 查询用户在团队中的角色信息
+     * 
+     * @param passwordManageUserId 用户在password_manage_user表中的id
+     * @return
+     */
+    public PasswordManageTeamRole selectPasswordManageTeamRoleByPasswordManageUserId(Long teamId,
+            Long passwordManageUserId);
 
     /**
      * 查询团队中的所有成员列表
@@ -74,7 +87,7 @@ public interface IPasswordManageTeamRoleService {
     /**
      * 获取该用户所属的所有团队
      * 
-     * @param id 用户id
+     * @param id 成员在password_manage_user中的id
      * @return 所属团队列表
      */
     public List<PasswordManageTeam> selectPasswordManageTeamList(Long id);
@@ -87,4 +100,22 @@ public interface IPasswordManageTeamRoleService {
      * @return
      */
     public Integer selectTeamRoleOfMember(Long teamId, long userId);
+
+    /**
+     * 新增团队成员
+     * 
+     * @param vo
+     * @return
+     */
+    public TeamCreatorRoleVo addTeamMember(PasswordManageTeamRoleVo vo, Long teamCreatorPasswordManageUserId);
+
+    /**
+     * 团队成员退出团队
+     * 
+     * @param teamId
+     * @param passwordManageUserId
+     * @return
+     */
+    public Integer MemberLeaveTeam(Long teamId, Long passwordManageUserId);
+
 }

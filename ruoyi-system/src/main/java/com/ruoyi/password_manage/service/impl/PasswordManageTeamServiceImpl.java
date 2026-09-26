@@ -5,13 +5,14 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.bean.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageUser;
+import com.ruoyi.password_manage.domain.vo.PasswordManageTeamVo;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageUserMapper;
@@ -36,10 +37,10 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
     private PasswordManageUserMapper passwordManageUserMapper;
 
     /**
-     * 查询团队密码管理-团队密码
+     * 查询团队信息
      * 
-     * @param id 团队密码管理-团队密码主键
-     * @return 团队密码管理-团队密码
+     * @param id 团队id
+     * @return
      */
     @Override
     public PasswordManageTeam selectPasswordManageTeamById(Long id) {
@@ -53,31 +54,38 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
      * @return 管理团队信息集合
      */
     @Override
-    public List<PasswordManageTeam> selectPasswordManageTeamList(Long id) {
-        return passwordManageTeamMapper.selectPasswordManageTeamList(id);
+    public List<PasswordManageTeam> selectManageTeamList(Long id) {
+        return passwordManageTeamMapper.selectManageTeamList(id);
     }
 
     /**
-     * 新增团队密码管理-团队密码
+     * 团队密码管理
      * 
-     * @param passwordManageTeam 团队密码管理-团队密码
-     * @return 结果
+     * 新增团队，同时新增团队创建人为团队成员
+     * 
+     * @param passwordManageTeam 团队信息
+     * @return 团队id
      */
     @Override
-    public int insertPasswordManageTeam(PasswordManageTeam passwordManageTeam) {
+    public Long insertPasswordManageTeam(PasswordManageTeamVo vo) {
         // 自动填充创建人信息（基于当前登录用户），不依赖前端传值
-        // create_user_id 绑定 password_manage_user.id（个人密码库主键），而非 sys_user.id
         Long sysUserId = SecurityUtils.getUserId();
         PasswordManageUser pmu = passwordManageUserMapper.selectPasswordManageUserByUserId(sysUserId);
         if (pmu == null) {
             throw new ServiceException("当前用户尚未初始化个人密码库，无法创建团队");
         }
+        PasswordManageTeam passwordManageTeam = new PasswordManageTeam();
+        BeanUtils.copyProperties(vo, passwordManageTeam);
         passwordManageTeam.setCreateUserId(pmu.getId());
         SysUser sysUser = SecurityUtils.getLoginUser().getUser();
         passwordManageTeam.setUserName(sysUser.getUserName());
         passwordManageTeam.setNickName(sysUser.getNickName());
         passwordManageTeam.setCreateTime(DateUtils.getNowDate());
-        int rows = passwordManageTeamMapper.insertPasswordManageTeam(passwordManageTeam);
+        try {
+            passwordManageTeamMapper.insertPasswordManageTeam(passwordManageTeam);
+        } catch (Exception e) {
+            throw new ServiceException("团队创建失败。");
+        }
 
         // 创建者自动成为该团队的管理员（team_role = 0）
         PasswordManageTeamRole creatorRole = new PasswordManageTeamRole();
@@ -86,15 +94,20 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
         creatorRole.setUserName(sysUser.getUserName());
         creatorRole.setTeamName(passwordManageTeam.getTeamName());
         creatorRole.setTeamRole(0);
+        creatorRole.setTeamValutKeyEncryptedCipher(vo.getTeamValutKeyEncryptedCipher());
         creatorRole.setIsDeleted(0);
-        passwordManageTeamRoleMapper.insertPasswordManageTeamRole(creatorRole);
+        try {
+            passwordManageTeamRoleMapper.insertPasswordManageTeamRole(creatorRole);
+        } catch (Exception e) {
+            throw new ServiceException("团队创建时写入团队创建成员失败。");
+        }
 
-        return rows;
+        return passwordManageTeam.getId();
     }
 
     /**
      * 修改团队密码管理-团队密码
-     * 
+     *
      * @param passwordManageTeam 团队密码管理-团队密码
      * @return 结果
      */
@@ -116,15 +129,23 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
     }
 
     /**
-     * 删除团队密码管理-团队密码信息
+     * 删除团队
      * 
-     * @param id 团队密码管理-团队密码主键
+     * @param id 团队id
      * @return 结果
      */
     @Override
-    public int deletePasswordManageTeamById(Long id) {
-        passwordManageTeamMapper.deletePasswordManageTeamById(id);
-        return passwordManageTeamRoleMapper.deletePasswordManageTeamAllMember(id);
-
+    public int deletePasswordManageTeamById(Long teamId) {
+        passwordManageTeamMapper.deletePasswordManageTeamById(teamId);
+        return passwordManageTeamRoleMapper.deletePasswordManageTeamAllMember(teamId);
     }
+
+    /**
+     * 查询以成员身份所在的团队列表
+     */
+    @Override
+    public List<PasswordManageTeam> selectTeamList(Long passwordManageUserId) {
+        return passwordManageTeamMapper.selectTeamList(passwordManageUserId);
+    }
+
 }

@@ -79,7 +79,7 @@ public class PasswordManageUserController extends BaseController {
     }
 
     /**
-     * 新增用户密码管理主，绑定系统的sys_user
+     * 新增密码管理用户
      */
     @PreAuthorize("@ss.hasPermi('system:user:add')")
     @Log(title = "用户密码管理主，绑定系统的sys_user", businessType = BusinessType.INSERT)

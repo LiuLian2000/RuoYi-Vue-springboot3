@@ -94,7 +94,7 @@ public class PasswordManageTeamCredentialServiceImpl implements IPasswordManageT
      * 模糊查询团队密码凭据
      */
     @Override
-    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredential(Long teamId, String platName) {
-        return passwordManageTeamCredentialMapper.selectPasswordManageTeamCredential(teamId, platName);
+    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredentialFuzzyList(Long teamId, String platName) {
+        return passwordManageTeamCredentialMapper.selectPasswordManageTeamCredentialFuzzyList(teamId, platName);
     }
 }

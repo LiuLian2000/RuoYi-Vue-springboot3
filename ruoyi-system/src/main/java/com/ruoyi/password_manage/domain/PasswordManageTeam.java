@@ -1,7 +1,5 @@
 package com.ruoyi.password_manage.domain;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
@@ -33,17 +31,8 @@ public class PasswordManageTeam extends BaseEntity {
     @Excel(name = "创建人昵称")
     private String nickName;
 
-    /** 团队密钥加密salt */
-    @Excel(name = "团队密钥加密salt，前端传回，不予展示")
-    private String randomSalt;
-
-    /** 团队认证密码 */
-    @Excel(name = "团队认证密码,前端加密传回")
-    private String teamPassword;
-
-    /** 团队密钥加密后密文 */
-    @Excel(name = "团队密钥加密后密文，前端传回，不予展示")
-    private String encryptedTeamKeyCipher;
+    /** 团队备注信息 */
+    private String remark;
 
     /** 逻辑删除 0-未删除 1-已删除 */
     @Excel(name = "逻辑删除 0-未删除 1-已删除")
@@ -89,28 +78,12 @@ public class PasswordManageTeam extends BaseEntity {
         return nickName;
     }
 
-    public void setRandomSalt(String randomSalt) {
-        this.randomSalt = randomSalt;
+    public String getRemark() {
+        return remark;
     }
 
-    public String getRandomSalt() {
-        return randomSalt;
-    }
-
-    public String getTeamPassword() {
-        return teamPassword;
-    }
-
-    public void setTeamPassword(String teamPassword) {
-        this.teamPassword = teamPassword;
-    }
-
-    public void setEncryptedTeamKeyCipher(String encryptedTeamKeyCipher) {
-        this.encryptedTeamKeyCipher = encryptedTeamKeyCipher;
-    }
-
-    public String getEncryptedTeamKeyCipher() {
-        return encryptedTeamKeyCipher;
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public void setIsDeleted(Integer isDeleted) {
@@ -123,19 +96,9 @@ public class PasswordManageTeam extends BaseEntity {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("teamName", getTeamName())
-                .append("createUserId", getCreateUserId())
-                .append("userName", getUserName())
-                .append("nickName", getNickName())
-                .append("randomSalt", getRandomSalt())
-                .append("teamPassword", getTeamPassword())
-                .append("encryptedTeamKeyCipher", getEncryptedTeamKeyCipher())
-                .append("remark", getRemark())
-                .append("createTime", getCreateTime())
-                .append("updateTime", getUpdateTime())
-                .append("isDeleted", getIsDeleted())
-                .toString();
+        return "PasswordManageTeam [id=" + id + ", teamName=" + teamName + ", createUserId=" + createUserId
+                + ", userName=" + userName + ", nickName=" + nickName + ", remark=" + remark + ", isDeleted="
+                + isDeleted + "]";
     }
+
 }

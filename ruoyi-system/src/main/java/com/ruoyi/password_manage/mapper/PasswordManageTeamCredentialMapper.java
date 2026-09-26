@@ -65,5 +65,5 @@ public interface PasswordManageTeamCredentialMapper {
      * @param platName
      * @return
      */
-    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredential(Long teamId, String platformName);
+    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredentialFuzzyList(Long teamId, String platformName);
 }

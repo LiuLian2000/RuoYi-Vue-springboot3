@@ -96,4 +96,22 @@ public interface PasswordManageTeamRoleMapper {
      */
     public Integer selectTeamRoleOfMember(Long teamId, long userId);
 
+    /**
+     * 查看该成员在团队中的信息
+     * 
+     * @param passwordManageUserId
+     * @return
+     */
+    public PasswordManageTeamRole selectPasswordManageTeamRoleByPasswordManageUserId(Long teamId,
+            Long passwordManageUserId);
+
+    /**
+     * 团队成员退出团队
+     * 
+     * @param teamId
+     * @param passwordManageUserId
+     * @return
+     */
+    public Integer MemberLeaveTeam(Long teamId, Long passwordManageUserId);
+
 }

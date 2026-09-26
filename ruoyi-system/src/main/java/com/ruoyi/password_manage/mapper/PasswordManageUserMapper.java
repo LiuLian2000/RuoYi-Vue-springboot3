@@ -12,17 +12,17 @@ import com.ruoyi.password_manage.domain.PasswordManageUser;
  */
 public interface PasswordManageUserMapper {
     /**
-     * 查询用户密码管理主，绑定系统的sys_user
+     * 查询密码管理用户信息
      * 
-     * @param id 用户密码管理主，绑定系统的sys_user主键
-     * @return 用户密码管理主，绑定系统的sys_user
+     * @param id 密码管理用户表主键id
+     * @return
      */
     public PasswordManageUser selectPasswordManageUserById(Long id);
 
     /**
-     * 查询用户ValutKey
+     * 查询密码管理用户信息
      * 
-     * @param usrId sys_user中的id主键
+     * @param usrId 系统用户表中的主键userid
      * @return
      */
     public PasswordManageUser selectPasswordManageUserByUserId(Long usrId);
@@ -36,9 +36,9 @@ public interface PasswordManageUserMapper {
     public List<PasswordManageUser> selectPasswordManageUserList(PasswordManageUser passwordManageUser);
 
     /**
-     * 新增用户密码管理主，绑定系统的sys_user
+     * 新增密码管理用户，绑定系统的sys_user
      * 
-     * @param passwordManageUser 用户密码管理主，绑定系统的sys_user
+     * @param passwordManageUser
      * @return 结果
      */
     public int insertPasswordManageUser(PasswordManageUser passwordManageUser);

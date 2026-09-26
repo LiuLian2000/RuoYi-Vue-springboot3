@@ -24,7 +24,7 @@ public interface PasswordManageTeamMapper {
      * @param id admin id
      * @return 管理团队信息集合
      */
-    public List<PasswordManageTeam> selectPasswordManageTeamList(Long id);
+    public List<PasswordManageTeam> selectManageTeamList(Long id);
 
     /**
      * 新增团队密码管理-团队密码
@@ -57,4 +57,12 @@ public interface PasswordManageTeamMapper {
      * @return 结果
      */
     public int deletePasswordManageTeamByIds(Long[] ids);
+
+    /**
+     * 查询以成员身份所在的团队列表
+     * 
+     * @param passwordManageUserId
+     * @return
+     */
+    public List<PasswordManageTeam> selectTeamList(Long passwordManageUserId);
 }

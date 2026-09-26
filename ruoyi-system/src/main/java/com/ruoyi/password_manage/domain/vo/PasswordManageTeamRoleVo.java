@@ -32,6 +32,11 @@ public class PasswordManageTeamRoleVo extends BaseEntity {
     @Excel(name = "是否删除")
     private Integer isDeleted;
 
+    /**
+     * 创建人使用公钥加密后的团队金库密钥
+     */
+    private String teamValutKeyEncryptedCipher;
+
     /** 操作人所在团队id */
     private Long operatedTeamId;
 
@@ -110,12 +115,20 @@ public class PasswordManageTeamRoleVo extends BaseEntity {
         this.operatedUserId = operatedUserId;
     }
 
+    public String getTeamValutKeyEncryptedCipher() {
+        return teamValutKeyEncryptedCipher;
+    }
+
+    public void setTeamValutKeyEncryptedCipher(String teamValutKeyEncryptedCipher) {
+        this.teamValutKeyEncryptedCipher = teamValutKeyEncryptedCipher;
+    }
+
     @Override
     public String toString() {
         return "PasswordManageTeamRoleVo [id=" + id + ", teamName=" + teamName + ", teamId=" + teamId + ", userName="
                 + userName + ", userId=" + userId + ", teamRole=" + teamRole + ", isDeleted=" + isDeleted
-                + ", operatedTeamId=" + operatedTeamId + ", operatedUserId=" + operatedUserId + ", getCreateTime()="
-                + getCreateTime() + "]";
+                + ", teamValutKeyEncryptedCipher=" + teamValutKeyEncryptedCipher + ", operatedTeamId=" + operatedTeamId
+                + ", operatedUserId=" + operatedUserId + "]";
     }
 
 }

@@ -5,6 +5,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 public class PasswordManageTeamCredentialVo extends BaseEntity {
 
+    // TODO 所有库表的updatetime都应该进行调整，而createtime只用于创建时，后续不再更新。
     /** id主键 */
     private Long id;
 
@@ -17,16 +18,16 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
     private String platformName;
 
     /** 用户名iv */
-    @Excel(name = "用户名iv")
-    private String accountIv;
+    @Excel(name = "用户名salt")
+    private String accountSalt;
 
     /** 用户名加密密文 */
     @Excel(name = "用户名加密密文")
     private String accountCipher;
 
     /** 密码iv */
-    @Excel(name = "密码iv")
-    private String passwordIv;
+    @Excel(name = "密码salt")
+    private String passwordSalt;
 
     /** 密码加密密文 */
     @Excel(name = "密码加密密文")
@@ -35,22 +36,6 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
     /** 逻辑删除，0表示未删除，1表示删除 */
     @Excel(name = "逻辑删除，0表示未删除，1表示删除")
     private Integer isDeleted;
-
-    /** 操作人所属团队id */
-    private Long operatedTeamId;
-
-    /** 操作人id */
-    private Long operatedUserId;
-
-    private String authPassword;
-
-    public String getAuthPassword() {
-        return authPassword;
-    }
-
-    public void setAuthPassword(String password) {
-        this.authPassword = password;
-    }
 
     public Long getId() {
         return id;
@@ -76,12 +61,12 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
         this.platformName = platformName;
     }
 
-    public String getAccountIv() {
-        return accountIv;
+    public String getAccountSalt() {
+        return accountSalt;
     }
 
-    public void setAccountIv(String accountIv) {
-        this.accountIv = accountIv;
+    public void setAccountSalt(String accountIv) {
+        this.accountSalt = accountIv;
     }
 
     public String getAccountCipher() {
@@ -92,12 +77,12 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
         this.accountCipher = accountCipher;
     }
 
-    public String getPasswordIv() {
-        return passwordIv;
+    public String getPasswordSalt() {
+        return passwordSalt;
     }
 
-    public void setPasswordIv(String passwordIv) {
-        this.passwordIv = passwordIv;
+    public void setPasswordSalt(String passwordIv) {
+        this.passwordSalt = passwordIv;
     }
 
     public String getPasswordCipher() {
@@ -114,22 +99,6 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
 
     public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
-    }
-
-    public Long getOperatedTeamId() {
-        return operatedTeamId;
-    }
-
-    public void setOperatedTeamId(Long operatedTeamId) {
-        this.operatedTeamId = operatedTeamId;
-    }
-
-    public Long getOperatedUserId() {
-        return operatedUserId;
-    }
-
-    public void setOperatedUserId(Long operatedUserId) {
-        this.operatedUserId = operatedUserId;
     }
 
 }
