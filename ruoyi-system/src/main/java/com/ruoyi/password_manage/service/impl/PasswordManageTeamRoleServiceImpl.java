@@ -3,6 +3,7 @@ package com.ruoyi.password_manage.service.impl;
 import java.util.List;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
@@ -17,6 +18,7 @@ import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageUser;
 import com.ruoyi.password_manage.domain.vo.PasswordManageMemberVo;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamRoleVo;
+import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
 import com.ruoyi.password_manage.domain.vo.TeamCreatorRoleVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 
@@ -56,11 +58,6 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
     @Override
     public List<SysUser> selectPasswordManageTeamRoleList(Long id) {
         return passwordManageTeamRoleMapper.selectPasswordManageTeamRoleList(id);
-    }
-
-    @Override
-    public List<PasswordManageMemberVo> selectCandidateMembers(Long teamId) {
-        return passwordManageTeamRoleMapper.selectCandidateMembers(teamId);
     }
 
     /**
@@ -107,6 +104,10 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      */
     @Override
     public int deletePasswordManageTeamRoleById(Long teamId, Long userId) {
+        List<Long> list = passwordManageTeamRoleMapper.selectTeamManagerPasswordManageUserIdList(teamId);
+        if (list.contains(userId)) {
+            throw new ServiceException("无法对团队管理员执行删除操作");
+        }
         return passwordManageTeamRoleMapper.deletePasswordManageTeamRoleById(teamId, userId);
     }
 
@@ -139,7 +140,7 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
     @Override
     public TeamCreatorRoleVo addTeamMember(PasswordManageTeamRoleVo vo, Long teamCreatorPasswordManageUserId) {
         Long memberId = vo.getUserId();
-        Long teamId = vo.getOperatedTeamId();
+        Long teamId = vo.getTeamId();
         PasswordManageTeamRole passwordManageTeamRole = new PasswordManageTeamRole();
         BeanUtils.copyProperties(vo, passwordManageTeamRole);
         passwordManageTeamRole.setTeamId(teamId);
@@ -155,12 +156,11 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
             teamCreatorRoleVo.setMemberPublicKey(member.getPublicKey());
             PasswordManageTeamRole teamCreatorRole = passwordManageTeamRoleMapper
                     .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, teamCreatorPasswordManageUserId);
-            teamCreatorRoleVo.setRandomSalt(teamCreatorRole.getRandomSalt());
-            teamCreatorRoleVo.setRandomIv(teamCreatorRole.getRandomIv());
             teamCreatorRoleVo.setTeamValutKeyEncryptedCipher(teamCreatorRole.getTeamValutKeyEncryptedCipher());
+            teamCreatorRoleVo.setNewMemberRoleId(passwordManageTeamRole.getId());
             return teamCreatorRoleVo;
         } else {
-            // 被添加成员的被加密金库秘钥已传回
+            // 被添加成员的被加密金库秘钥由前端传回（此次调用需要传入新成员在role表中记录的id）
             passwordManageTeamRoleMapper.updatePasswordManageTeamRole(passwordManageTeamRole);
             return null;
         }
@@ -173,12 +173,25 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
     public Integer MemberLeaveTeam(Long teamId, Long passwordManageUserId) {
         PasswordManageTeamRole role = passwordManageTeamRoleMapper
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
-        if (role == null || 1 != role.getIsDeleted()) {
+        if (role == null || 1 == role.getIsDeleted()) {
             throw new RuntimeException("非团队成员，无团队操作权限。");
         } else if (0 == role.getTeamRole()) {
             throw new RuntimeException("团队管理员无法退出团队，请先转让团队管理员权限。");
         }
         return passwordManageTeamRoleMapper.MemberLeaveTeam(teamId, passwordManageUserId);
+    }
+
+    @Override
+    public List<TeamCandidateMemberVo> selectCandidateMembers(Long teamId) {
+        List<TeamCandidateMemberVo> list = passwordManageTeamRoleMapper.selectCandidateMembers(teamId);
+        // 过滤掉admin用户
+        for (TeamCandidateMemberVo vo : list) {
+            if ("admin".equals(vo.getUserName())) {
+                list.remove(vo);
+                break;
+            }
+        }
+        return list;
     }
 
 }

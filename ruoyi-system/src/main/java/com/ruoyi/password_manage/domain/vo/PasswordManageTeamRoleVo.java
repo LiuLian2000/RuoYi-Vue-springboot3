@@ -21,7 +21,7 @@ public class PasswordManageTeamRoleVo extends BaseEntity {
     private String userName;
 
     /** 成员用户id */
-    @Excel(name = "成员用户id")
+    @Excel(name = "用户的passwordManageUserId")
     private Long userId;
 
     /** 该成员在团队中的角色，0-admin，1-mebmer */
@@ -37,10 +37,14 @@ public class PasswordManageTeamRoleVo extends BaseEntity {
      */
     private String teamValutKeyEncryptedCipher;
 
-    /** 操作人所在团队id */
+    /**
+     * 操作人所在团队id 废弃字段
+     */
     private Long operatedTeamId;
 
-    /** 操作人的userid */
+    /**
+     * 操作人的userid 废弃字段
+     */
     private Long operatedUserId;
 
     public Long getId() {

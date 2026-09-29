@@ -10,6 +10,8 @@ public class TeamCandidateMemberVo {
 
     private String phoneNumber;
 
+    private String nickName;
+
     public Long getPasswordManageUserId() {
         return passwordManageUserId;
     }
@@ -42,10 +44,18 @@ public class TeamCandidateMemberVo {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     @Override
     public String toString() {
         return "TeamCandidateMemberVo [passwordManageUserId=" + passwordManageUserId + ", deptName=" + deptName
-                + ", userName=" + userName + ", phoneNumber=" + phoneNumber + "]";
+                + ", userName=" + userName + ", phoneNumber=" + phoneNumber + ", nickName=" + nickName + "]";
     }
 
 }

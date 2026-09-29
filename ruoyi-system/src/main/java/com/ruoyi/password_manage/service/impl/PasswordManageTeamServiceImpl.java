@@ -106,14 +106,15 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
     }
 
     /**
-     * 修改团队密码管理-团队密码
+     * 修改团队信息
      *
      * @param passwordManageTeam 团队密码管理-团队密码
      * @return 结果
      */
     @Override
     public int updatePasswordManageTeam(PasswordManageTeam passwordManageTeam) {
-        passwordManageTeam.setUpdateTime(DateUtils.getNowDate());
+        // TODO update的updateTime？
+        // passwordManageTeam.setUpdateTime(DateUtils.getNowDate());
         return passwordManageTeamMapper.updatePasswordManageTeam(passwordManageTeam);
     }
 
@@ -146,6 +147,14 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
     @Override
     public List<PasswordManageTeam> selectTeamList(Long passwordManageUserId) {
         return passwordManageTeamMapper.selectTeamList(passwordManageUserId);
+    }
+
+    /**
+     * 查询该团队管理员的passwordManageUserId
+     */
+    @Override
+    public List<Long> selectTeamManagerPasswordManageUserIdList(Long teamId) {
+        return passwordManageTeamRoleMapper.selectTeamManagerPasswordManageUserIdList(teamId);
     }
 
 }

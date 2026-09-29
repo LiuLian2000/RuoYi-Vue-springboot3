@@ -5,8 +5,8 @@ import java.util.List;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
-import com.ruoyi.password_manage.domain.vo.PasswordManageMemberVo;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamRoleVo;
+import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
 import com.ruoyi.password_manage.domain.vo.TeamCreatorRoleVo;
 
 /**
@@ -49,7 +49,7 @@ public interface IPasswordManageTeamRoleService {
      * @param teamId 团队id
      * @return 候选成员列表
      */
-    public List<PasswordManageMemberVo> selectCandidateMembers(Long teamId);
+    public List<TeamCandidateMemberVo> selectCandidateMembers(Long teamId);
 
     /**
      * 新增用户在团队中的角色

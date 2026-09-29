@@ -63,13 +63,14 @@ public class PasswordManageTeamRoleController extends BaseController {
      * @param id 团队id
      * @return 团队内所有成员列表
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:list')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:role:list')")
     @GetMapping("/list")
     @Operation(summary = "获取团队成员列表", description = "获取团队成员列表")
     public TableDataInfo list(
-            @Parameter(name = "团队id", in = ParameterIn.QUERY) @RequestParam Long teamId,
-            @Parameter(name = "操作人id", in = ParameterIn.QUERY) @RequestParam Long userId) {
-        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, userId);
+            @Parameter(name = "团队id", in = ParameterIn.QUERY) @RequestParam Long teamId) {
+        Long passwordManageUserId = passwordManageUserService
+                .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
+        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, passwordManageUserId);
         if (role == null || 0 != role) {
             TableDataInfo tableDataInfo = new TableDataInfo();
             tableDataInfo.setCode(500);
@@ -85,7 +86,7 @@ public class PasswordManageTeamRoleController extends BaseController {
      * 新增团队成员
      * 
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
     @Log(title = "新增团队成员", businessType = BusinessType.INSERT)
     @Operation(summary = "新增团队成员", description = "新增团队成员时，首次调用该方法，方法返回创建人金库秘钥密文及被添加人公钥；" +
             "再次调用该方法，需传入被添加成员加密后金库秘钥")
@@ -94,7 +95,7 @@ public class PasswordManageTeamRoleController extends BaseController {
         Long passwordManageUserId = passwordManageUserService
                 .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
         Long memberId = vo.getUserId();
-        Long teamId = vo.getOperatedTeamId();
+        Long teamId = vo.getTeamId();
         if (memberId == null) {
             return AjaxResult.error("请选择要添加的成员");
         }
@@ -109,25 +110,18 @@ public class PasswordManageTeamRoleController extends BaseController {
     /**
      * 获取可添加的成员候选列表（有个人金库、且尚未加入该团队的用户）
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
     @Operation(summary = "获取可添加的成员候选列表")
     @GetMapping("/candidates")
     public AjaxResult candidates(
             @Parameter(name = "团队id", in = ParameterIn.QUERY) @RequestParam Long teamId) {
+        Long passwordManageUserId = passwordManageUserService
+                .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
+        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, passwordManageUserId);
+        if (role == null || 0 != role) {
+            return AjaxResult.error("非操作团队管理员，无该团队成员管理权限。");
+        }
         return AjaxResult.success(passwordManageTeamRoleService.selectCandidateMembers(teamId));
-    }
-
-    // TODO 核验该接口是否应该存在？
-    /**
-     * 查询某用户在指定团队中的角色（0-admin，1-member），非成员返回 null
-     */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:list')")
-    @Operation(summary = "查询用户在团队中的角色")
-    @GetMapping("/roleOfMember")
-    public AjaxResult roleOfMember(
-            @Parameter(name = "团队id") @RequestParam Long teamId,
-            @Parameter(name = "操作人的password_manage_user id") @RequestParam Long userId) {
-        return AjaxResult.success(passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, userId));
     }
 
     /***
@@ -137,7 +131,7 @@ public class PasswordManageTeamRoleController extends BaseController {
      * @param deletedUserId 被删除团队成员的password_manage_user表id
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:remove')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:role:remove')")
     @Log(title = "删除团队中某位成员", businessType = BusinessType.DELETE)
     @Operation(summary = "删除团队成员")
     @DeleteMapping
@@ -155,9 +149,9 @@ public class PasswordManageTeamRoleController extends BaseController {
     /**
      * 获取个人所在的团队列表
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:role:team_list')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:role:team_list')")
     @Operation(summary = "获取个人所属的团队列表")
-    @GetMapping("/MyTeam")
+    @GetMapping("/myTeam")
     public TableDataInfo getTeamList() {
         startPage();
         List<PasswordManageTeam> list = passwordManageTeamRoleService

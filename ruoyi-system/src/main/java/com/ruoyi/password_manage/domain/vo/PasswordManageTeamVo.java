@@ -47,6 +47,22 @@ public class PasswordManageTeamVo {
         this.teamName = teamName;
     }
 
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getTeamValutKeyEncryptedCipher() {
+        return teamValutKeyEncryptedCipher;
+    }
+
+    public void setTeamValutKeyEncryptedCipher(String teamValutKeyEncryptedCipher) {
+        this.teamValutKeyEncryptedCipher = teamValutKeyEncryptedCipher;
+    }
+
     public Long getCreateUserId() {
         return createUserId;
     }
@@ -69,22 +85,6 @@ public class PasswordManageTeamVo {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public String getTeamValutKeyEncryptedCipher() {
-        return teamValutKeyEncryptedCipher;
-    }
-
-    public void setTeamValutKeyEncryptedCipher(String teamValutKeyEncryptedCipher) {
-        this.teamValutKeyEncryptedCipher = teamValutKeyEncryptedCipher;
     }
 
     @Override

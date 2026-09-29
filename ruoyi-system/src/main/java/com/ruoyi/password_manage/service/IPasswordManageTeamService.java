@@ -66,4 +66,9 @@ public interface IPasswordManageTeamService {
      * @return
      */
     public List<PasswordManageTeam> selectTeamList(Long passwordManageUserId);
+
+    /**
+     * 查询团队创建人信息
+     */
+    public List<Long> selectTeamManagerPasswordManageUserIdList(Long teamId);
 }

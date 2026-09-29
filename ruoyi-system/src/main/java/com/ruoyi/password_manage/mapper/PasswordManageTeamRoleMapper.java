@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.vo.PasswordManageMemberVo;
+import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
 
 /**
  * 用户在团队中的角色Mapper接口
@@ -36,7 +37,7 @@ public interface PasswordManageTeamRoleMapper {
      * @param teamId 团队id
      * @return 候选成员列表
      */
-    public List<PasswordManageMemberVo> selectCandidateMembers(Long teamId);
+    public List<TeamCandidateMemberVo> selectCandidateMembers(Long teamId);
 
     /**
      * 新增用户在团队中的角色
@@ -113,5 +114,10 @@ public interface PasswordManageTeamRoleMapper {
      * @return
      */
     public Integer MemberLeaveTeam(Long teamId, Long passwordManageUserId);
+
+    /**
+     * 查询团队管理员的passwordManageUserId
+     */
+    public List<Long> selectTeamManagerPasswordManageUserIdList(Long teamId);
 
 }

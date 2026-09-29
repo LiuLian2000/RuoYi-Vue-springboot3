@@ -47,7 +47,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 查询管理团队列表
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:team:list')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:team:list')")
     @Operation(summary = "查询管理团队列表", description = "团队管理员依赖此接口查询管理团队列表")
     @GetMapping("/ManageTeamlist")
     public AjaxResult getManageTeamlist() {
@@ -62,6 +62,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 查询以成员身份所在的团队列表
      */
+    @RequestMapping("/teamList")
     public AjaxResult getTeamlist() {
         startPage();
         Long sysusrId = getLoginUser().getUserId();
@@ -86,8 +87,9 @@ public class PasswordManageTeamController extends BaseController {
 
     /**
      * 新增团队，更新创建人为管理员
+     * 入参只需要team_name,reamrk,teamValutKeyEncryptedCipher
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:team:add')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:team:add')")
     @Log(title = "团队密码管理-新增团队", businessType = BusinessType.INSERT)
     @Operation(summary = "新增团队", description = "新增团队，同时更新团队成员表")
     @PostMapping
@@ -99,7 +101,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 团队密码管理-修改团队信息
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:team:edit')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:team:edit')")
     @Log(title = "团队密码管理-团队密码", businessType = BusinessType.UPDATE)
     @Operation(summary = "修改团队信息")
     @PutMapping
@@ -110,7 +112,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 团队密码管理-删除团队,连携删除团队成员
      */
-    @PreAuthorize("@ss.hasPermi('password_manage:team:remove')")
+    // @PreAuthorize("@ss.hasPermi('password_manage:team:remove')")
     @Log(title = "团队密码管理-团队密码", businessType = BusinessType.DELETE)
     @Operation(summary = "删除团队", description = "删除团队，同时删除团队成员")
     @DeleteMapping("/{id}")
@@ -124,4 +126,5 @@ public class PasswordManageTeamController extends BaseController {
         }
         return success(passwordManageTeamService.deletePasswordManageTeamById(teamId));
     }
+
 }

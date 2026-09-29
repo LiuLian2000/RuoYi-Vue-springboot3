@@ -95,13 +95,16 @@ public class SysLoginService {
                 MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         recordLoginInfo(loginUser.getUserId());
-        PasswordManageUser passwordManageUser = passwordManageUserMapper
-                .selectPasswordManageUserByUserId(loginUser.getUserId());
         UserLoginVo vo = new UserLoginVo();
         vo.setToken(tokenService.createToken(loginUser));
-        vo.setPrivateKetSalt(passwordManageUser.getPrivateKeySalt());
-        vo.setPrivateKeyIv(passwordManageUser.getPrivateKeyIv());
-        vo.setPrivateKeyCipher(passwordManageUser.getPrivateKeyCipher());
+        PasswordManageUser passwordManageUser = passwordManageUserMapper
+                .selectPasswordManageUserByUserId(loginUser.getUserId());
+        // 如果用户已经解锁金库，拥有个人秘钥对
+        if (passwordManageUser != null) {
+            vo.setPrivateKetSalt(passwordManageUser.getPrivateKeySalt());
+            vo.setPrivateKeyIv(passwordManageUser.getPrivateKeyIv());
+            vo.setPrivateKeyCipher(passwordManageUser.getPrivateKeyCipher());
+        }
         // 生成token
         return vo;
     }

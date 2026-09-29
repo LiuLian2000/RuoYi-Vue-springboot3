@@ -6,29 +6,12 @@ package com.ruoyi.password_manage.domain.vo;
  */
 public class TeamCreatorRoleVo {
 
-    private String randomSalt;
-
-    private String randomIv;
-
     private String teamValutKeyEncryptedCipher;
 
     private String memberPublicKey;
 
-    public String getRandomSalt() {
-        return randomSalt;
-    }
-
-    public void setRandomSalt(String randomSalt) {
-        this.randomSalt = randomSalt;
-    }
-
-    public String getRandomIv() {
-        return randomIv;
-    }
-
-    public void setRandomIv(String randomIv) {
-        this.randomIv = randomIv;
-    }
+    // 新添加团队成员记录在role表中的id
+    private Long newMemberRoleId;
 
     public String getTeamValutKeyEncryptedCipher() {
         return teamValutKeyEncryptedCipher;
@@ -46,11 +29,18 @@ public class TeamCreatorRoleVo {
         this.memberPublicKey = memberPublicKey;
     }
 
+    public Long getNewMemberRoleId() {
+        return newMemberRoleId;
+    }
+
+    public void setNewMemberRoleId(Long newMemberRoleId) {
+        this.newMemberRoleId = newMemberRoleId;
+    }
+
     @Override
     public String toString() {
-        return "TeamCreatorRoleVo [randomSalt=" + randomSalt + ", randomIv=" + randomIv
-                + ", teamValutKeyEncryptedCipher=" + teamValutKeyEncryptedCipher + ", memberPublicKey="
-                + memberPublicKey + "]";
+        return "TeamCreatorRoleVo [teamValutKeyEncryptedCipher=" + teamValutKeyEncryptedCipher + ", memberPublicKey="
+                + memberPublicKey + ", newMemberRoleId=" + newMemberRoleId + "]";
     }
 
 }
