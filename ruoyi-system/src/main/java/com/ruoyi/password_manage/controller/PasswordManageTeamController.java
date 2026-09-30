@@ -1,7 +1,6 @@
 package com.ruoyi.password_manage.controller;
 
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +14,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.password_manage.common.constants.TeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageUser;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamVo;
@@ -60,33 +60,7 @@ public class PasswordManageTeamController extends BaseController {
     }
 
     /**
-     * 查询以成员身份所在的团队列表
-     */
-    @RequestMapping("/teamList")
-    public AjaxResult getTeamlist() {
-        startPage();
-        Long sysusrId = getLoginUser().getUserId();
-        Long passwordManageUserId = (passwordManageUserService.selectPasswordManageUserByUserId(sysusrId)).getId();
-        List<PasswordManageTeam> list = passwordManageTeamService
-                .selectTeamList(passwordManageUserId);
-        return AjaxResult.success(list);
-    }
-
-    // /**
-    // * 获取团队详细信息 接口暂时作废
-    // *
-    // */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:query')")
-    // @Operation(summary = "获取团队信息", description = "查询团队信息及团队密钥用于加解密")
-    // @GetMapping(value = "/{id}")
-    // public AjaxResult getInfo(
-    // @Parameter(name = "团队id", description = "团队id", in = ParameterIn.PATH)
-    // @PathVariable("id") Long id) {
-    // return success(passwordManageTeamService.selectPasswordManageTeamById(id));
-    // }
-
-    /**
-     * 新增团队，更新创建人为管理员
+     * 新增团队，更新创建人为超级管理员
      * 入参只需要team_name,reamrk,teamValutKeyEncryptedCipher
      */
     // @PreAuthorize("@ss.hasPermi('password_manage:team:add')")
@@ -106,25 +80,44 @@ public class PasswordManageTeamController extends BaseController {
     @Operation(summary = "修改团队信息")
     @PutMapping
     public AjaxResult edit(@RequestBody PasswordManageTeam passwordManageTeam) {
+        Long teamId = passwordManageTeam.getId();
+        Long userId = getLoginUser().getUserId();
+        PasswordManageUser user = passwordManageUserService.selectPasswordManageUserByUserId(userId);
+        Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, user.getId());
+        if (role == null || (TeamRole.SUPER_ADMIN != role && TeamRole.ADMIN != role)) {
+            return AjaxResult.error("非团队管理员，无团队信息编辑权限。");
+        }
         return success(passwordManageTeamService.updatePasswordManageTeam(passwordManageTeam));
     }
 
     /**
-     * 团队密码管理-删除团队,连携删除团队成员
+     * 解散团队
      */
     // @PreAuthorize("@ss.hasPermi('password_manage:team:remove')")
     @Log(title = "团队密码管理-团队密码", businessType = BusinessType.DELETE)
-    @Operation(summary = "删除团队", description = "删除团队，同时删除团队成员")
+    @Operation(summary = "解散团队", description = "解散团队，同时删除团队成员")
     @DeleteMapping("/{id}")
     public AjaxResult remove(
             @Parameter(name = "团队id", description = "团队id", in = ParameterIn.PATH) @PathVariable Long teamId) {
         Long userId = getLoginUser().getUserId();
         PasswordManageUser user = passwordManageUserService.selectPasswordManageUserByUserId(userId);
         Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId, user.getId());
-        if (role == null || 0 != role) {
-            return AjaxResult.error("非团队管理员，无凭据管理权限。");
+        if (role == null || TeamRole.SUPER_ADMIN != role) {
+            return AjaxResult.error("非团队超级管理员，无团队解散权限。");
         }
         return success(passwordManageTeamService.deletePasswordManageTeamById(teamId));
     }
 
+    /**
+     * 查询以成员身份所在的团队列表 废弃接口
+     */
+    @RequestMapping("/teamList")
+    public AjaxResult getTeamlist() {
+        startPage();
+        Long sysusrId = getLoginUser().getUserId();
+        Long passwordManageUserId = (passwordManageUserService.selectPasswordManageUserByUserId(sysusrId)).getId();
+        List<PasswordManageTeam> list = passwordManageTeamService
+                .selectTeamList(passwordManageUserId);
+        return AjaxResult.success(list);
+    }
 }

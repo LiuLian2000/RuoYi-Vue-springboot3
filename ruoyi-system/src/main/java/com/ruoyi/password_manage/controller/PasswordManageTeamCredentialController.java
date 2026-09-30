@@ -1,7 +1,6 @@
 package com.ruoyi.password_manage.controller;
 
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.password_manage.common.constants.TeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageTeamCredential;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamCredentialVo;
@@ -84,7 +83,6 @@ public class PasswordManageTeamCredentialController extends BaseController {
         @GetMapping("/fuzzyQuery")
         public AjaxResult getInfo(@Parameter(name = "团队id", required = true) @RequestParam Long teamId,
                         @Parameter(name = "查看团队密码平台", required = false) @RequestParam String platName) {
-                System.out.println("------>teamId:" + teamId + "------>platName:" + platName);
                 Long passwordManageUserId = passwordManageUserService
                                 .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
                 PasswordManageTeamRole role = passwordManageTeamRoleService
@@ -114,7 +112,8 @@ public class PasswordManageTeamCredentialController extends BaseController {
                 PasswordManageTeamRole role = passwordManageTeamRoleService
                                 .selectPasswordManageTeamRoleByPasswordManageUserId(vo.getTeamId(),
                                                 passwordManageUserId);
-                if (role == null || 0 != role.getTeamRole()) {
+                if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
+                                && TeamRole.ADMIN != role.getTeamRole())) {
                         throw new ServiceException("非团队管理员，无凭据管理权限。");
                 }
                 PasswordManageTeamCredential passwordManageTeamCredential = new PasswordManageTeamCredential();
@@ -137,7 +136,8 @@ public class PasswordManageTeamCredentialController extends BaseController {
                 PasswordManageTeamRole role = passwordManageTeamRoleService
                                 .selectPasswordManageTeamRoleByPasswordManageUserId(vo.getTeamId(),
                                                 passwordManageUserId);
-                if (role == null || 0 != role.getTeamRole()) {
+                if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
+                                && TeamRole.ADMIN != role.getTeamRole())) {
                         throw new ServiceException("非团队管理员，无凭据管理权限。");
                 }
                 PasswordManageTeamCredential passwordManageTeamCredential = new PasswordManageTeamCredential();
@@ -163,7 +163,8 @@ public class PasswordManageTeamCredentialController extends BaseController {
                                 .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
                 PasswordManageTeamRole role = passwordManageTeamRoleService
                                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
-                if (role == null || 0 != role.getTeamRole()) {
+                if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
+                                && TeamRole.ADMIN != role.getTeamRole())) {
                         throw new ServiceException("非团队管理员，无凭据管理权限。");
                 }
                 return success(passwordManageTeamCredentialService.deletePasswordManageTeamCredentialById(id));

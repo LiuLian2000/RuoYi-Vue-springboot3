@@ -60,22 +60,6 @@ public interface IPasswordManageTeamRoleService {
     public int insertPasswordManageTeamRole(PasswordManageTeamRole passwordManageTeamRole);
 
     /**
-     * 修改用户在团队中的角色
-     * 
-     * @param passwordManageTeamRole 用户在团队中的角色
-     * @return 结果
-     */
-    public int updatePasswordManageTeamRole(PasswordManageTeamRole passwordManageTeamRole);
-
-    // /**
-    // * 批量删除用户在团队中的角色
-    // *
-    // * @param ids 需要删除的用户在团队中的角色主键集合
-    // * @return 结果
-    // */
-    // public int deletePasswordManageTeamRoleByIds(Long[] ids);
-
-    /**
      * 删除用户在团队中的角色信息
      * 
      * @param teamId 团队id
@@ -117,5 +101,32 @@ public interface IPasswordManageTeamRoleService {
      * @return
      */
     public Integer MemberLeaveTeam(Long teamId, Long passwordManageUserId);
+
+    /**
+     * 团队成员添加管理员权限
+     * 
+     * @param teamId
+     * @param passwordManageUserId
+     * @return
+     */
+    public Integer setTeamManagerAuth(Long teamId, Long passwordManageUserId);
+
+    /**
+     * 团队成员移除管理员权限
+     * 
+     * @param teamId
+     * @param PasswordManagerUserId
+     * @return
+     */
+    public Integer removeTeamManagerAuth(Long teamId, Long PasswordManageUserId);
+
+    /**
+     * 移交团队超级管理员权限
+     * 
+     * @param teamId
+     * @param passowrdManageUserId
+     * @return
+     */
+    public Integer transTeamSuperManagerAuth(Long teamId, Long passowrdManageUserId, Long nowSuperAdminUserId);
 
 }

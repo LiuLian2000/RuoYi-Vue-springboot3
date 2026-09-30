@@ -9,6 +9,9 @@ import com.ruoyi.common.utils.bean.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.ruoyi.password_manage.common.constants.DeletedStatus;
+import com.ruoyi.password_manage.common.constants.TeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageUser;
@@ -87,15 +90,15 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
             throw new ServiceException("团队创建失败。");
         }
 
-        // 创建者自动成为该团队的管理员（team_role = 0）
+        // 创建者自动成为该团队的超级管理员（team_role = 0）
         PasswordManageTeamRole creatorRole = new PasswordManageTeamRole();
         creatorRole.setTeamId(passwordManageTeam.getId());
         creatorRole.setUserId(pmu.getId());
         creatorRole.setUserName(sysUser.getUserName());
         creatorRole.setTeamName(passwordManageTeam.getTeamName());
-        creatorRole.setTeamRole(0);
+        creatorRole.setTeamRole(TeamRole.SUPER_ADMIN);
         creatorRole.setTeamValutKeyEncryptedCipher(vo.getTeamValutKeyEncryptedCipher());
-        creatorRole.setIsDeleted(0);
+        creatorRole.setIsDeleted(DeletedStatus.NOT_DELETED);
         try {
             passwordManageTeamRoleMapper.insertPasswordManageTeamRole(creatorRole);
         } catch (Exception e) {
@@ -130,7 +133,7 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
     }
 
     /**
-     * 删除团队
+     * 解散团队
      * 
      * @param id 团队id
      * @return 结果

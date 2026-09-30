@@ -5,8 +5,8 @@ import java.util.List;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
-import com.ruoyi.password_manage.domain.vo.PasswordManageMemberVo;
 import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
+import com.ruoyi.password_manage.domain.vo.TeamMemberVo;
 
 /**
  * 用户在团队中的角色Mapper接口
@@ -117,7 +117,20 @@ public interface PasswordManageTeamRoleMapper {
 
     /**
      * 查询团队管理员的passwordManageUserId
+     * 
+     * @param teamId
+     * @return
      */
     public List<Long> selectTeamManagerPasswordManageUserIdList(Long teamId);
+
+    /**
+     * 修改团队成员的团队权限角色
+     * 
+     * @param teamId
+     * @param passwordManageUserId
+     * @param role
+     * @return
+     */
+    public Integer updateTeamMemberRole(Long teamId, Long passwordManageUserId, Integer role);
 
 }

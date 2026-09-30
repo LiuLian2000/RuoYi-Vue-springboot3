@@ -65,4 +65,13 @@ public interface PasswordManageTeamMapper {
      * @return
      */
     public List<PasswordManageTeam> selectTeamList(Long passwordManageUserId);
+
+    /**
+     * 更新该团队的超级管理员
+     * 
+     * @param teamId
+     * @param passwordManageUserId
+     * @return
+     */
+    public Integer updateTeamSuperAdmin(Long teamId, Long passwordManageUserId);
 }
