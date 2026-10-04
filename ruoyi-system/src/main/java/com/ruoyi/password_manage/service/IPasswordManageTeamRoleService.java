@@ -5,9 +5,11 @@ import java.util.List;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
-import com.ruoyi.password_manage.domain.vo.PasswordManageTeamRoleVo;
+import com.ruoyi.password_manage.domain.dto.PasswordManageTeamRoleDto;
+import com.ruoyi.password_manage.domain.vo.MyTeamVo;
 import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
 import com.ruoyi.password_manage.domain.vo.TeamCreatorRoleVo;
+import com.ruoyi.password_manage.domain.vo.TeamMemberVo;
 
 /**
  * 
@@ -41,7 +43,7 @@ public interface IPasswordManageTeamRoleService {
      * @param id 团队id
      * @return 用户在团队中的所有成员列表
      */
-    public List<SysUser> selectPasswordManageTeamRoleList(Long id);
+    public List<TeamMemberVo> selectTeamMemberList(Long id);
 
     /**
      * 查询可添加的成员候选列表（有个人金库、且未加入该团队的用户）
@@ -69,12 +71,12 @@ public interface IPasswordManageTeamRoleService {
     public int deletePasswordManageTeamRoleById(Long teamId, Long userId);
 
     /**
-     * 获取该用户所属的所有团队
+     * 获取用户所在的团队列表
      * 
      * @param id 成员在password_manage_user中的id
      * @return 所属团队列表
      */
-    public List<PasswordManageTeam> selectPasswordManageTeamList(Long id);
+    public List<MyTeamVo> selectPasswordManageTeamList(Long id);
 
     /***
      * 查询该成员在团队中的角色
@@ -91,7 +93,7 @@ public interface IPasswordManageTeamRoleService {
      * @param vo
      * @return
      */
-    public TeamCreatorRoleVo addTeamMember(PasswordManageTeamRoleVo vo, Long teamCreatorPasswordManageUserId);
+    public TeamCreatorRoleVo addTeamMember(PasswordManageTeamRoleDto vo, Long teamCreatorPasswordManageUserId);
 
     /**
      * 团队成员退出团队

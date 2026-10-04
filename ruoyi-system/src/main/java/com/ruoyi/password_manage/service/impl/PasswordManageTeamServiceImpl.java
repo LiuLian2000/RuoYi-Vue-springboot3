@@ -15,6 +15,8 @@ import com.ruoyi.password_manage.common.constants.TeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageUser;
+import com.ruoyi.password_manage.domain.dto.EditPasswordManageTeamDto;
+import com.ruoyi.password_manage.domain.vo.MyManagementTeamVo;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamVo;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
@@ -57,7 +59,7 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
      * @return 管理团队信息集合
      */
     @Override
-    public List<PasswordManageTeam> selectManageTeamList(Long id) {
+    public List<MyManagementTeamVo> selectManageTeamList(Long id) {
         return passwordManageTeamMapper.selectManageTeamList(id);
     }
 
@@ -75,21 +77,19 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
         Long sysUserId = SecurityUtils.getUserId();
         PasswordManageUser pmu = passwordManageUserMapper.selectPasswordManageUserByUserId(sysUserId);
         if (pmu == null) {
-            throw new ServiceException("当前用户尚未初始化个人密码库，无法创建团队");
+            throw new ServiceException("当前用户尚未初始化个人密码库，无法创建团队。");
+        }
+        if (passwordManageTeamMapper.selectTeamByTeamName(vo.getTeamName()) > 0) {
+            throw new ServiceException("当前团队名称已存在，请更改团队名称。");
         }
         PasswordManageTeam passwordManageTeam = new PasswordManageTeam();
         BeanUtils.copyProperties(vo, passwordManageTeam);
         passwordManageTeam.setCreateUserId(pmu.getId());
+        passwordManageTeam.setSuperManagerUserId(pmu.getId());
         SysUser sysUser = SecurityUtils.getLoginUser().getUser();
         passwordManageTeam.setUserName(sysUser.getUserName());
         passwordManageTeam.setNickName(sysUser.getNickName());
-        passwordManageTeam.setCreateTime(DateUtils.getNowDate());
-        try {
-            passwordManageTeamMapper.insertPasswordManageTeam(passwordManageTeam);
-        } catch (Exception e) {
-            throw new ServiceException("团队创建失败。");
-        }
-
+        passwordManageTeamMapper.insertPasswordManageTeam(passwordManageTeam);
         // 创建者自动成为该团队的超级管理员（team_role = 0）
         PasswordManageTeamRole creatorRole = new PasswordManageTeamRole();
         creatorRole.setTeamId(passwordManageTeam.getId());
@@ -99,12 +99,7 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
         creatorRole.setTeamRole(TeamRole.SUPER_ADMIN);
         creatorRole.setTeamValutKeyEncryptedCipher(vo.getTeamValutKeyEncryptedCipher());
         creatorRole.setIsDeleted(DeletedStatus.NOT_DELETED);
-        try {
-            passwordManageTeamRoleMapper.insertPasswordManageTeamRole(creatorRole);
-        } catch (Exception e) {
-            throw new ServiceException("团队创建时写入团队创建成员失败。");
-        }
-
+        passwordManageTeamRoleMapper.insertPasswordManageTeamRole(creatorRole);
         return passwordManageTeam.getId();
     }
 
@@ -115,10 +110,9 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
      * @return 结果
      */
     @Override
-    public int updatePasswordManageTeam(PasswordManageTeam passwordManageTeam) {
+    public int updatePasswordManageTeam(EditPasswordManageTeamDto dto) {
         // TODO update的updateTime？
-        // passwordManageTeam.setUpdateTime(DateUtils.getNowDate());
-        return passwordManageTeamMapper.updatePasswordManageTeam(passwordManageTeam);
+        return passwordManageTeamMapper.updatePasswordManageTeam(dto);
     }
 
     /**

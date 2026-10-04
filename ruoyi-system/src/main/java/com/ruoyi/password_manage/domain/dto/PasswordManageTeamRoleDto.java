@@ -1,9 +1,9 @@
-package com.ruoyi.password_manage.domain.vo;
+package com.ruoyi.password_manage.domain.dto;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
-public class PasswordManageTeamRoleVo extends BaseEntity {
+public class PasswordManageTeamRoleDto extends BaseEntity {
 
     /** 主键 */
     private Long id;

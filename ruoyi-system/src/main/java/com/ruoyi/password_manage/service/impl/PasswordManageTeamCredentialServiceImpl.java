@@ -53,7 +53,6 @@ public class PasswordManageTeamCredentialServiceImpl implements IPasswordManageT
      */
     @Override
     public int insertPasswordManageTeamCredential(PasswordManageTeamCredential passwordManageTeamCredential) {
-        passwordManageTeamCredential.setCreateTime(DateUtils.getNowDate());
         return passwordManageTeamCredentialMapper.insertPasswordManageTeamCredential(passwordManageTeamCredential);
     }
 
@@ -94,7 +93,8 @@ public class PasswordManageTeamCredentialServiceImpl implements IPasswordManageT
      * 模糊查询团队密码凭据
      */
     @Override
-    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredentialFuzzyList(Long teamId, String platName) {
+    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredentialFuzzyList(Long teamId,
+            String platName) {
         return passwordManageTeamCredentialMapper.selectPasswordManageTeamCredentialFuzzyList(teamId, platName);
     }
 }

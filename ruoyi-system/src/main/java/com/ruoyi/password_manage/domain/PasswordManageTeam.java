@@ -1,7 +1,6 @@
 package com.ruoyi.password_manage.domain;
 
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 团队密码管理-团队密码对象 password_manage_team
@@ -9,8 +8,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * @author DiZhicong
  * @date 2026-09-01
  */
-public class PasswordManageTeam extends BaseEntity {
-    private static final long serialVersionUID = 1L;
+public class PasswordManageTeam {
 
     /** 主键id */
     private Long id;
@@ -30,6 +28,10 @@ public class PasswordManageTeam extends BaseEntity {
     /** 创建人昵称 */
     @Excel(name = "创建人昵称")
     private String nickName;
+
+    /** 团队当前超级管理员ID */
+    @Excel(name = "团队当前超级管理员ID")
+    private Long superManagerUserId;
 
     /** 团队备注信息 */
     private String remark;
@@ -94,11 +96,19 @@ public class PasswordManageTeam extends BaseEntity {
         return isDeleted;
     }
 
+    public Long getSuperManagerUserId() {
+        return superManagerUserId;
+    }
+
+    public void setSuperManagerUserId(Long superManagerUserId) {
+        this.superManagerUserId = superManagerUserId;
+    }
+
     @Override
     public String toString() {
         return "PasswordManageTeam [id=" + id + ", teamName=" + teamName + ", createUserId=" + createUserId
-                + ", userName=" + userName + ", nickName=" + nickName + ", remark=" + remark + ", isDeleted="
-                + isDeleted + "]";
+                + ", userName=" + userName + ", nickName=" + nickName + ", superManagerUserId=" + superManagerUserId
+                + ", remark=" + remark + ", isDeleted=" + isDeleted + "]";
     }
 
 }

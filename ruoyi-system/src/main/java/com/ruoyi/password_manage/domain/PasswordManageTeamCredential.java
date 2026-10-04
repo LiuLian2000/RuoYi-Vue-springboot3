@@ -1,7 +1,8 @@
 package com.ruoyi.password_manage.domain;
 
+import java.time.LocalDateTime;
+
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 团队密码凭据增删改查对象 password_manage_team_credential
@@ -9,8 +10,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * @author DiZhicong
  * @date 2026-09-02
  */
-public class PasswordManageTeamCredential extends BaseEntity {
-    private static final long serialVersionUID = 1L;
+public class PasswordManageTeamCredential {
 
     /** id主键 */
     private Long id;
@@ -38,6 +38,10 @@ public class PasswordManageTeamCredential extends BaseEntity {
     /** 密码加密密文 */
     @Excel(name = "密码加密密文")
     private String passwordCipher;
+
+    /** 密码凭据创建时间 */
+    @Excel(name = "密码凭据创建时间")
+    private LocalDateTime createTime;
 
     /** 逻辑删除，0表示未删除，1表示删除 */
     @Excel(name = "逻辑删除，0表示未删除，1表示删除")
@@ -112,6 +116,14 @@ public class PasswordManageTeamCredential extends BaseEntity {
         return "PasswordManageTeamCredential [id=" + id + ", teamId=" + teamId + ", platformName=" + platformName
                 + ", accountSalt=" + accountSalt + ", accountCipher=" + accountCipher + ", passwordSalt=" + passwordSalt
                 + ", passwordCipher=" + passwordCipher + ", isDeleted=" + isDeleted + "]";
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
     }
 
 }

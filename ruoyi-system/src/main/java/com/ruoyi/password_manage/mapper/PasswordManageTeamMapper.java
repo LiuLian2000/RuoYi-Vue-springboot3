@@ -2,6 +2,8 @@ package com.ruoyi.password_manage.mapper;
 
 import java.util.List;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
+import com.ruoyi.password_manage.domain.dto.EditPasswordManageTeamDto;
+import com.ruoyi.password_manage.domain.vo.MyManagementTeamVo;
 
 /**
  * 团队密码管理-团队密码Mapper接口
@@ -24,7 +26,7 @@ public interface PasswordManageTeamMapper {
      * @param id admin id
      * @return 管理团队信息集合
      */
-    public List<PasswordManageTeam> selectManageTeamList(Long id);
+    public List<MyManagementTeamVo> selectManageTeamList(Long id);
 
     /**
      * 新增团队密码管理-团队密码
@@ -35,12 +37,12 @@ public interface PasswordManageTeamMapper {
     public int insertPasswordManageTeam(PasswordManageTeam passwordManageTeam);
 
     /**
-     * 修改团队密码管理-团队密码
+     * 修改团队信息
      * 
      * @param passwordManageTeam 团队密码管理-团队密码
      * @return 结果
      */
-    public int updatePasswordManageTeam(PasswordManageTeam passwordManageTeam);
+    public int updatePasswordManageTeam(EditPasswordManageTeamDto dto);
 
     /**
      * 删除团队密码管理-团队密码
@@ -74,4 +76,12 @@ public interface PasswordManageTeamMapper {
      * @return
      */
     public Integer updateTeamSuperAdmin(Long teamId, Long passwordManageUserId);
+
+    /**
+     * 根据团队名称判断该团队是否已经存在
+     * 
+     * @param teamName
+     * @return
+     */
+    public Integer selectTeamByTeamName(String teamName);
 }

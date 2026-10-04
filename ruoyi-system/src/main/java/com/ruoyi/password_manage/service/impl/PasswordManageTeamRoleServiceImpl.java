@@ -18,9 +18,11 @@ import com.ruoyi.password_manage.common.constants.TeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageUser;
-import com.ruoyi.password_manage.domain.vo.PasswordManageTeamRoleVo;
+import com.ruoyi.password_manage.domain.dto.PasswordManageTeamRoleDto;
+import com.ruoyi.password_manage.domain.vo.MyTeamVo;
 import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
 import com.ruoyi.password_manage.domain.vo.TeamCreatorRoleVo;
+import com.ruoyi.password_manage.domain.vo.TeamMemberVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 
 /**
@@ -60,8 +62,8 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      * @return 团队中的所有成员列表
      */
     @Override
-    public List<SysUser> selectPasswordManageTeamRoleList(Long id) {
-        return passwordManageTeamRoleMapper.selectPasswordManageTeamRoleList(id);
+    public List<TeamMemberVo> selectTeamMemberList(Long id) {
+        return passwordManageTeamRoleMapper.selectTeamMemberList(id);
     }
 
     /**
@@ -94,10 +96,10 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
     }
 
     /**
-     * 获取所属团队列表
+     * 查询用户所在团队列表
      */
     @Override
-    public List<PasswordManageTeam> selectPasswordManageTeamList(Long id) {
+    public List<MyTeamVo> selectPasswordManageTeamList(Long id) {
         PasswordManageUser tmp = passwordManageUserMapper.selectPasswordManageUserByUserId(id);
         return passwordManageTeamRoleMapper.selectPasswordManageTeamList(tmp.getId());
     }
@@ -123,11 +125,11 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      * (non-Javadoc)
      * 新增团队成员
      * 
-     * @see com.ruoyi.password_manage.service.IPasswordManageTeamRoleService#addTeamMember(com.ruoyi.password_manage.domain.vo.PasswordManageTeamRoleVo,
+     * @see com.ruoyi.password_manage.service.IPasswordManageTeamRoleService#addTeamMember(com.ruoyi.password_manage.domain.dto.PasswordManageTeamRoleDto,
      *      java.lang.Long)
      */
     @Override
-    public TeamCreatorRoleVo addTeamMember(PasswordManageTeamRoleVo vo, Long teamCreatorPasswordManageUserId) {
+    public TeamCreatorRoleVo addTeamMember(PasswordManageTeamRoleDto vo, Long teamManagerUserId) {
         Long memberId = vo.getUserId();
         Long teamId = vo.getTeamId();
         PasswordManageTeamRole passwordManageTeamRole = new PasswordManageTeamRole();
@@ -139,12 +141,12 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
         if (StringUtils.isEmpty(passwordManageTeamRole.getTeamValutKeyEncryptedCipher())) {
             // 建立该成员的role记录
             passwordManageTeamRoleMapper.insertPasswordManageTeamRole(passwordManageTeamRole);
-            // 将管理员的role记录和被添加团队成员的公钥传回前端
+            // 将当前管理员的role记录和被添加团队成员的公钥传回前端
             TeamCreatorRoleVo teamCreatorRoleVo = new TeamCreatorRoleVo();
             PasswordManageUser member = passwordManageUserMapper.selectPasswordManageUserById(memberId);
             teamCreatorRoleVo.setMemberPublicKey(member.getPublicKey());
             PasswordManageTeamRole teamCreatorRole = passwordManageTeamRoleMapper
-                    .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, teamCreatorPasswordManageUserId);
+                    .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, teamManagerUserId);
             teamCreatorRoleVo.setTeamValutKeyEncryptedCipher(teamCreatorRole.getTeamValutKeyEncryptedCipher());
             teamCreatorRoleVo.setNewMemberRoleId(passwordManageTeamRole.getId());
             return teamCreatorRoleVo;
@@ -203,7 +205,8 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      */
     @Override
     public Integer setTeamManagerAuth(Long teamId, Long passwordManageUserId) {
-        return passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, passwordManageUserId, TeamRole.ADMIN);
+        Integer role = TeamRole.ADMIN;
+        return passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, passwordManageUserId, role);
     }
 
     /**
@@ -215,7 +218,8 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      */
     @Override
     public Integer removeTeamManagerAuth(Long teamId, Long PasswordManageUserId) {
-        return passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, PasswordManageUserId, TeamRole.MEMBER);
+        Integer role = TeamRole.MEMBER;
+        return passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, PasswordManageUserId, role);
     }
 
     /**
@@ -226,11 +230,13 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
      *      java.lang.Long, java.lang.Long)
      */
     @Override
-    public Integer transTeamSuperManagerAuth(Long teamId, Long passowrdManageUserId, Long nowSuperAdminUserId) {
-        Integer row1 = passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, passowrdManageUserId,
-                TeamRole.SUPER_ADMIN);
-        Integer row2 = passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, nowSuperAdminUserId, TeamRole.ADMIN);
-        Integer row3 = passwordManageTeamMapper.updateTeamSuperAdmin(teamId, passowrdManageUserId);
+    public Integer transTeamSuperManagerAuth(Long teamId, Long passwordManageUserId, Long nowSuperAdminUserId) {
+        Integer role = TeamRole.SUPER_ADMIN;
+        Integer row1 = passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, passwordManageUserId,
+                role);
+        role = TeamRole.ADMIN;
+        Integer row2 = passwordManageTeamRoleMapper.updateTeamMemberRole(teamId, nowSuperAdminUserId, role);
+        Integer row3 = passwordManageTeamMapper.updateTeamSuperAdmin(teamId, passwordManageUserId);
         return (row1 + row2 + row3);
     }
 

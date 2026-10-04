@@ -5,6 +5,7 @@ import java.util.List;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
+import com.ruoyi.password_manage.domain.vo.MyTeamVo;
 import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
 import com.ruoyi.password_manage.domain.vo.TeamMemberVo;
 
@@ -29,7 +30,7 @@ public interface PasswordManageTeamRoleMapper {
      * @param id admin id
      * @return 用户管理团队列表
      */
-    public List<SysUser> selectPasswordManageTeamRoleList(Long id);
+    public List<TeamMemberVo> selectTeamMemberList(Long id);
 
     /**
      * 查询可添加的成员候选列表（有个人金库、且未加入该团队的用户）
@@ -81,12 +82,12 @@ public interface PasswordManageTeamRoleMapper {
     public int deletePasswordManageTeamAllMember(Long teamId);
 
     /***
-     * 获取成员所属团队列表
+     * 查询用户所在团队列表
      * 
      * @param id 成员id
      * @return
      */
-    public List<PasswordManageTeam> selectPasswordManageTeamList(Long id);
+    public List<MyTeamVo> selectPasswordManageTeamList(Long id);
 
     /***
      * 查看该成员在团队中的角色
