@@ -1,6 +1,9 @@
 package com.ruoyi.password_manage.controller;
 
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,13 +16,14 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.password_manage.common.constants.ExceptionMessages;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.dto.PasswordManageTeamRoleDto;
 import com.ruoyi.password_manage.domain.vo.TeamMemberVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 import com.ruoyi.password_manage.service.PasswordManageUserService;
 import com.ruoyi.password_manage.utils.TeamRoleVerifyUtils;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import com.ruoyi.common.core.page.TableDataInfo;
@@ -43,6 +47,8 @@ public class PasswordManageTeamRoleController extends BaseController {
         @Autowired
         private TeamRoleVerifyUtils teamRoleVerifyUtils;
 
+        private Logger log = LoggerFactory.getLogger(PasswordManageTeamController.class);
+
         /**
          * 查询某团队所有成员
          * 
@@ -50,21 +56,23 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @return 团队内所有成员列表
          */
         // @PreAuthorize("@ss.hasPermi('password_manage:role:list')")
+        @Log(title = "查询团队成员列表", businessType = BusinessType.QUERY)
         @GetMapping("/list")
-        @Operation(summary = "获取团队成员列表", description = "获取团队成员列表")
         public TableDataInfo list(
                         @Parameter(name = "团队id", in = ParameterIn.QUERY) @RequestParam Long teamId) {
-                // Long passwordManageUserId = passwordManageUserService
-                // .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                // Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId,
-                // passwordManageUserId);
-                // if (role == null) {
-                // throw new ServiceException("非团队成员，无团队成员列表查看权限。");
-                // }
-                teamRoleVerifyUtils.teamMemberVerify(teamId);
-                startPage();
-                List<TeamMemberVo> list = passwordManageTeamRoleService.selectTeamMemberList(teamId);
-                return getDataTable(list);
+
+                try {
+                        teamRoleVerifyUtils.teamMemberVerify(teamId);
+                        startPage();
+                        List<TeamMemberVo> list = passwordManageTeamRoleService.selectTeamMemberList(teamId);
+                        return getDataTable(list);
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+
         }
 
         /**
@@ -73,84 +81,88 @@ public class PasswordManageTeamRoleController extends BaseController {
          */
         // @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
         @Log(title = "新增团队成员", businessType = BusinessType.INSERT)
-        @Operation(summary = "新增团队成员", description = "新增团队成员时，首次调用该方法，方法返回创建人金库秘钥密文及被添加人公钥；" +
-                        "再次调用该方法，需传入被添加成员加密后金库秘钥")
         @PostMapping
         public AjaxResult add(@RequestBody PasswordManageTeamRoleDto dto) {
-                Long memberId = dto.getUserId();
-                Long teamId = dto.getTeamId();
-                if (memberId == null) {
-                        return AjaxResult.error("请选择要添加的成员");
+                try {
+                        Long memberId = dto.getUserId();
+                        Long teamId = dto.getTeamId();
+                        if (memberId == null) {
+                                return AjaxResult.error("请选择要添加的成员");
+                        }
+                        List<Object> tmpList = teamRoleVerifyUtils.teamManagerVerify(teamId);
+                        Long passwordManageUserId = (Long) tmpList.get(0);
+                        return success(passwordManageTeamRoleService.addTeamMember(dto, passwordManageUserId));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
                 }
-                // Long passwordManageUserId = passwordManageUserService
-                // .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                // PasswordManageTeamRole role = passwordManageTeamRoleService
-                // .selectPasswordManageTeamRoleByPasswordManageUserId(teamId,
-                // passwordManageUserId);
-                // if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
-                // && TeamRole.ADMIN != role.getTeamRole())) {
-                // throw new RuntimeException("非团队管理员，无团队成员管理权限。");
-                // }
-                List<Object> tmpList = teamRoleVerifyUtils.teamManagerVerify(teamId);
-                Long passwordManageUserId = (Long) tmpList.get(0);
-                return success(passwordManageTeamRoleService.addTeamMember(dto, passwordManageUserId));
+
         }
 
         /**
          * 获取可添加的成员候选列表（有个人金库、且尚未加入该团队的用户）
          */
         // @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
-        @Operation(summary = "获取可添加的成员候选列表")
+        @Log(title = "查询团队可添加成员列表", businessType = BusinessType.QUERY)
         @GetMapping("/candidates")
         public AjaxResult candidates(
                         @Parameter(name = "团队id", in = ParameterIn.QUERY) @RequestParam Long teamId) {
-                // Long passwordManageUserId = passwordManageUserService
-                // .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                // PasswordManageTeamRole role = passwordManageTeamRoleService
-                // .selectPasswordManageTeamRoleByPasswordManageUserId(teamId,
-                // passwordManageUserId);
-                // if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
-                // && TeamRole.ADMIN != role.getTeamRole())) {
-                // throw new RuntimeException("非团队管理员，无团队成员管理权限。");
-                // }
-                teamRoleVerifyUtils.teamManagerVerify(teamId);
-                return AjaxResult.success(passwordManageTeamRoleService.selectCandidateMembers(teamId));
+                try {
+                        teamRoleVerifyUtils.teamManagerVerify(teamId);
+                        return AjaxResult.success(passwordManageTeamRoleService.selectCandidateMembers(teamId));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+
         }
 
         /***
-         * 删除团队中某成员
+         * 删除团队成员
          * 
          * @param teamId        操作团队id
          * @param deletedUserId 被删除团队成员的password_manage_user表id
          * @return
          */
         // @PreAuthorize("@ss.hasPermi('password_manage:role:remove')")
-        @Log(title = "删除团队中某位成员", businessType = BusinessType.DELETE)
-        @Operation(summary = "删除团队成员")
+        @Log(title = "删除团队成员", businessType = BusinessType.DELETE)
         @DeleteMapping
         public AjaxResult remove(@Parameter(name = "操作团队id") @RequestParam Long teamId,
                         @Parameter(name = "被删除队员的password_manage_user id") @RequestParam Long deletedUserId) {
-                // Long passwordManageUserId = passwordManageUserService
-                // .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                // PasswordManageTeamRole role = passwordManageTeamRoleService
-                // .selectPasswordManageTeamRoleByPasswordManageUserId(teamId,
-                // passwordManageUserId);
-                // if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
-                // && TeamRole.ADMIN != role.getTeamRole())) {
-                // throw new RuntimeException("非团队管理员，无团队成员管理权限。");
-                // }
-                teamRoleVerifyUtils.teamManagerVerify(teamId);
-                return toAjax(passwordManageTeamRoleService.deletePasswordManageTeamRoleById(teamId, deletedUserId));
+                try {
+                        teamRoleVerifyUtils.teamManagerVerify(teamId);
+                        return toAjax(passwordManageTeamRoleService.deletePasswordManageTeamRoleById(teamId,
+                                        deletedUserId));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+
         }
 
         /**
          * 团队成员退出团队
          */
+        @Log(title = "退出团队", businessType = BusinessType.DELETE)
         @DeleteMapping("/leave")
         public AjaxResult LeaveTeam(@RequestParam Long teamId) {
-                Long passwordManageUserId = passwordManageUserService
-                                .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                return success(passwordManageTeamRoleService.MemberLeaveTeam(teamId, passwordManageUserId));
+                try {
+                        Long passwordManageUserId = passwordManageUserService
+                                        .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
+                        return success(passwordManageTeamRoleService.MemberLeaveTeam(teamId, passwordManageUserId));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+
         }
 
         /**
@@ -160,18 +172,20 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param memberUserId 被赋予管理员权限成员的password_manage_user_id
          * @return
          */
+        @Log(title = "设置管理员权限", businessType = BusinessType.UPDATE)
         @PostMapping("/setTeamManager")
         public AjaxResult setTeamManagerAuth(@RequestParam Long teamId, @RequestParam Long memberUserId) {
-                // Long passwordManageUserId = passwordManageUserService
-                // .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                // Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId,
-                // passwordManageUserId);
-                // if (role == null || TeamRole.SUPER_ADMIN != role) {
-                // throw new RuntimeException("非团队超级管理员，无权限设置团队管理员。");
-                // }
-                teamRoleVerifyUtils.teamSuperManagerVerify(teamId);
-                return AjaxResult.success(
-                                passwordManageTeamRoleService.setTeamManagerAuth(teamId, memberUserId));
+                try {
+                        teamRoleVerifyUtils.teamSuperManagerVerify(teamId);
+                        return AjaxResult.success(
+                                        passwordManageTeamRoleService.setTeamManagerAuth(teamId, memberUserId));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+
         }
 
         /**
@@ -181,17 +195,19 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param managerUserId
          * @return
          */
+        @Log(title = "移除管理员权限", businessType = BusinessType.UPDATE)
         @PostMapping("/removeTeamManager")
         public AjaxResult removeTeamManagerAuth(@RequestParam Long teamId, @RequestParam Long managerUserId) {
-                // Long passwordManageUserId = passwordManageUserService
-                // .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                // Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId,
-                // passwordManageUserId);
-                // if (role == null || TeamRole.SUPER_ADMIN != role) {
-                // throw new RuntimeException("非团队超级管理员，无权限设置团队管理员。");
-                // }
-                teamRoleVerifyUtils.teamSuperManagerVerify(teamId);
-                return success(passwordManageTeamRoleService.removeTeamManagerAuth(teamId, managerUserId));
+                try {
+                        teamRoleVerifyUtils.teamSuperManagerVerify(teamId);
+                        return success(passwordManageTeamRoleService.removeTeamManagerAuth(teamId, managerUserId));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+
         }
 
         /**
@@ -201,19 +217,21 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param passowrdManageUserId
          * @return
          */
+        @Log(title = "移交超级管理员权限", businessType = BusinessType.UPDATE)
         @PostMapping("/transTeamSuperManager")
         public AjaxResult transTeamSuperManagerAuth(@RequestParam Long teamId, @RequestParam Long memberUserId) {
-                // Long passwordManageUserId = passwordManageUserService
-                // .selectPasswordManageUserByUserId(getLoginUser().getUserId()).getId();
-                // Integer role = passwordManageTeamRoleService.selectTeamRoleOfMember(teamId,
-                // passwordManageUserId);
-                // if (role == null || TeamRole.SUPER_ADMIN != role) {
-                // throw new RuntimeException("非团队超级管理员，无权限执行此操作。");
-                // }
-                List<Object> tmpList = teamRoleVerifyUtils.teamSuperManagerVerify(teamId);
-                Long passwordManageUserId = (Long) tmpList.get(0);
-                return success(passwordManageTeamRoleService.transTeamSuperManagerAuth(teamId, memberUserId,
-                                passwordManageUserId));
+                try {
+                        List<Object> tmpList = teamRoleVerifyUtils.teamSuperManagerVerify(teamId);
+                        Long passwordManageUserId = (Long) tmpList.get(0);
+                        return success(passwordManageTeamRoleService.transTeamSuperManagerAuth(teamId, memberUserId,
+                                        passwordManageUserId));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+
         }
 
         /**
@@ -222,10 +240,18 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param teamId
          * @return
          */
+        @Log(title = "查询当前用户在团队的角色", businessType = BusinessType.QUERY)
         @GetMapping("/loginUserRoleInfo")
         public AjaxResult getLoginUserPasswordManageTeamRoleInfo(@RequestParam Long teamId) {
-                List<Object> list = teamRoleVerifyUtils.teamMemberVerify(teamId);
-                return success((PasswordManageTeamRole) list.get(1));
+                try {
+                        List<Object> list = teamRoleVerifyUtils.teamMemberVerify(teamId);
+                        return success((PasswordManageTeamRole) list.get(1));
+                } catch (ServiceException se) {
+                        throw se;
+                } catch (Exception e) {
+                        log.info(e.getMessage(), e);
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
 
         }
 }

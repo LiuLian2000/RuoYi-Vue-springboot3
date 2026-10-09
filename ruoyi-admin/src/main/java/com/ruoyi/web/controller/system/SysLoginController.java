@@ -61,6 +61,9 @@ public class SysLoginController {
                 loginBody.getCode(),
                 loginBody.getUuid());
         ajax.put(Constants.TOKEN, userLoginVo.getToken());
+        ajax.put("personalVaultSalt", userLoginVo.getPersonalVaultSalt());
+        ajax.put("personalVaultIv", userLoginVo.getPersonalVaultIv());
+        ajax.put("personalVaultCipher", userLoginVo.getPersonalVaultCipher());
         ajax.put("privateKeySalt", userLoginVo.getPrivateKetSalt());
         ajax.put("privateKeyIv", userLoginVo.getPrivateKeyIv());
         ajax.put("privateKeyCipher", userLoginVo.getPrivateKeyCipher());

@@ -1,21 +1,19 @@
 package com.ruoyi.password_manage.service.impl;
 
 import java.util.List;
-
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.ruoyi.password_manage.mapper.PasswordManageTeamMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageUserMapper;
+import com.ruoyi.password_manage.common.constants.ExceptionMessages;
 import com.ruoyi.password_manage.common.constants.TeamRole;
-import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageUser;
 import com.ruoyi.password_manage.domain.dto.PasswordManageTeamRoleDto;
@@ -24,6 +22,7 @@ import com.ruoyi.password_manage.domain.vo.TeamCandidateMemberVo;
 import com.ruoyi.password_manage.domain.vo.TeamCreatorRoleVo;
 import com.ruoyi.password_manage.domain.vo.TeamMemberVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
+import com.ruoyi.password_manage.service.PasswordManageUserService;
 
 /**
  * 用户在团队中的角色Service业务层处理
@@ -34,6 +33,9 @@ import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 @Service
 @Transactional
 public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRoleService {
+
+    @Autowired
+    private PasswordManageUserService passwordManageUserService;
 
     @Autowired
     private PasswordManageTeamRoleMapper passwordManageTeamRoleMapper;
@@ -67,30 +69,41 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
     }
 
     /**
-     * 新增用户在团队中的角色
+     * 新增团队成员
      * 
-     * @param passwordManageTeamRole 用户在团队中的角色
+     * @param passwordManageTeamRole 用户在团队中的成员
      * @return 结果
      */
     @Override
     public int insertPasswordManageTeamRole(PasswordManageTeamRole passwordManageTeamRole) {
-        passwordManageTeamRole.setCreateTime(DateUtils.getNowDate());
+        if (passwordManageTeamRoleMapper.selectTeamMemberHaveExist(passwordManageTeamRole.getTeamId(),
+                passwordManageTeamRole.getUserId()) != 0) {
+            throw new ServiceException(ExceptionMessages.TEAM_MEMBER_HAVE_EXIST);
+        }
         return passwordManageTeamRoleMapper.insertPasswordManageTeamRole(passwordManageTeamRole);
     }
 
     /**
-     * 删除团队中某用户
+     * 删除团队中某成员
      * 
      * @param teamId 团队id
      * @param userId 用户id
      * @return 结果
      */
     @Override
-    // TODO 这里后续应该改一下，超管删除管理员不用卡
     public int deletePasswordManageTeamRoleById(Long teamId, Long passwordManageUserId) {
-        List<Long> list = passwordManageTeamRoleMapper.selectTeamManagerPasswordManageUserIdList(teamId);
-        if (list.contains(passwordManageUserId)) {
-            throw new ServiceException("无法对团队管理员执行删除操作,请先移除该成员的管理员权限。");
+        if (passwordManageTeamRoleMapper.selectTeamMemberHaveExist(teamId, passwordManageUserId) == 0) {
+            throw new ServiceException(ExceptionMessages.TEAM_MEMBER_NOT_EXIST);
+        }
+        Long loginUserId = passwordManageUserService
+                .selectPasswordManageUserByUserId(SecurityUtils.getLoginUser().getUserId()).getId();
+        PasswordManageTeamRole role = selectPasswordManageTeamRoleByPasswordManageUserId(teamId, loginUserId);
+        // 如果是管理员，不能删除管理员
+        if (TeamRole.ADMIN == role.getTeamRole()) {
+            List<Long> list = passwordManageTeamRoleMapper.selectTeamManagerPasswordManageUserIdList(teamId);
+            if (list.contains(passwordManageUserId)) {
+                throw new ServiceException(ExceptionMessages.CANNOT_DELETE_ADMIN);
+            }
         }
         return passwordManageTeamRoleMapper.deletePasswordManageTeamRoleById(teamId, passwordManageUserId);
     }
@@ -116,7 +129,7 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId,
                         passwordManageUserId);
         if (userRoleInfo == null) {
-            throw new RuntimeException("非团队成员，未查询到团队成员的角色信息。");
+            throw new RuntimeException(ExceptionMessages.NO_MEM_ROLE);
         }
         return userRoleInfo;
     }
@@ -170,9 +183,9 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
         PasswordManageTeamRole role = passwordManageTeamRoleMapper
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
         if (role == null) {
-            throw new RuntimeException("非团队成员，无团队操作权限。");
+            throw new RuntimeException(ExceptionMessages.NOT_TEAM_MEM);
         } else if (TeamRole.SUPER_ADMIN == role.getTeamRole()) {
-            throw new RuntimeException("团队超级管理员无法退出团队，请先转让团队超级管理员权限。");
+            throw new RuntimeException(ExceptionMessages.SUPER_ADMIN_CANNOT_LEAVE_TEAM);
         }
         return passwordManageTeamRoleMapper.MemberLeaveTeam(teamId, passwordManageUserId);
     }

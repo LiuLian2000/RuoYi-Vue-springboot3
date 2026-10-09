@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.password_manage.common.constants.ExceptionMessages;
 import com.ruoyi.password_manage.common.constants.TeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.service.PasswordManageUserService;
@@ -34,7 +35,7 @@ public class TeamRoleVerifyUtils {
         PasswordManageTeamRole role = passwordManageTeamRoleService
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
         if (role == null) {
-            throw new ServiceException("非团队成员，无团队成员操作权限。");
+            throw new ServiceException(ExceptionMessages.NOT_TEAM_MEM);
         } else {
             return new ArrayList<>(List.of(passwordManageUserId, role));
         }
@@ -53,7 +54,7 @@ public class TeamRoleVerifyUtils {
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
         if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
                 && TeamRole.ADMIN != role.getTeamRole())) {
-            throw new RuntimeException("非团队管理员，无团队管理员操作权限。");
+            throw new RuntimeException(ExceptionMessages.NOT_TEAM_ADMIN);
         } else {
             return new ArrayList<>(List.of(passwordManageUserId, role));
         }
@@ -71,7 +72,7 @@ public class TeamRoleVerifyUtils {
         PasswordManageTeamRole role = passwordManageTeamRoleService
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
         if (role == null || TeamRole.SUPER_ADMIN != role.getTeamRole()) {
-            throw new RuntimeException("非团队超级管理员，无团队超级管理员操作权限。");
+            throw new RuntimeException(ExceptionMessages.NOT_TEAM_SUPER_ADMIN);
         } else {
             return new ArrayList<>(List.of(passwordManageUserId, role));
         }

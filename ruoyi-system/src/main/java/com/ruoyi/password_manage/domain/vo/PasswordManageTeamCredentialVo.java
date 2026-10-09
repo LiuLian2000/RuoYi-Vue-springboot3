@@ -5,7 +5,6 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 public class PasswordManageTeamCredentialVo extends BaseEntity {
 
-    // TODO 所有库表的updatetime都应该进行调整，而createtime只用于创建时，后续不再更新。
     /** id主键 */
     private Long id;
 

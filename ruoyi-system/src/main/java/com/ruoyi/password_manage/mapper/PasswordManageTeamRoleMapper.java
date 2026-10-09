@@ -134,4 +134,13 @@ public interface PasswordManageTeamRoleMapper {
      */
     public Integer updateTeamMemberRole(Long teamId, Long passwordManageUserId, Integer role);
 
+    /**
+     * 查询该用户在团队中是否已经存在
+     * 
+     * @param teamId
+     * @param UserId
+     * @return
+     */
+    public Integer selectTeamMemberHaveExist(Long teamId, Long userId);
+
 }

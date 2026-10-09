@@ -3,14 +3,13 @@ package com.ruoyi.password_manage.service.impl;
 import java.util.List;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.ruoyi.password_manage.common.constants.DeletedStatus;
+import com.ruoyi.password_manage.common.constants.ExceptionMessages;
 import com.ruoyi.password_manage.common.constants.TeamRole;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
@@ -77,10 +76,10 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
         Long sysUserId = SecurityUtils.getUserId();
         PasswordManageUser pmu = passwordManageUserMapper.selectPasswordManageUserByUserId(sysUserId);
         if (pmu == null) {
-            throw new ServiceException("当前用户尚未初始化个人密码库，无法创建团队。");
+            throw new ServiceException(ExceptionMessages.VAULT_UNLOCK);
         }
         if (passwordManageTeamMapper.selectTeamByTeamName(vo.getTeamName()) > 0) {
-            throw new ServiceException("当前团队名称已存在，请更改团队名称。");
+            throw new ServiceException(ExceptionMessages.TEAM_NAME_HAVE_EXIST);
         }
         PasswordManageTeam passwordManageTeam = new PasswordManageTeam();
         BeanUtils.copyProperties(vo, passwordManageTeam);
@@ -111,7 +110,9 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
      */
     @Override
     public int updatePasswordManageTeam(EditPasswordManageTeamDto dto) {
-        // TODO update的updateTime？
+        if (passwordManageTeamMapper.selectPasswordManageTeamById(dto.getId()) == null) {
+            throw new ServiceException(ExceptionMessages.TEAM_NOT_EXIST);
+        }
         return passwordManageTeamMapper.updatePasswordManageTeam(dto);
     }
 
@@ -134,6 +135,9 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
      */
     @Override
     public int deletePasswordManageTeamById(Long teamId) {
+        if (passwordManageTeamMapper.selectPasswordManageTeamById(teamId) == null) {
+            throw new ServiceException(ExceptionMessages.TEAM_NOT_EXIST);
+        }
         passwordManageTeamMapper.deletePasswordManageTeamById(teamId);
         return passwordManageTeamRoleMapper.deletePasswordManageTeamAllMember(teamId);
     }

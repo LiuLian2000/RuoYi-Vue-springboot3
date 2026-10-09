@@ -101,6 +101,9 @@ public class SysLoginService {
                 .selectPasswordManageUserByUserId(loginUser.getUserId());
         // 如果用户已经解锁金库，拥有个人秘钥对
         if (passwordManageUser != null) {
+            vo.setPersonalVaultSalt(passwordManageUser.getRandomSalt());
+            vo.setPersonalVaultIv(passwordManageUser.getEncryptedVaultIv());
+            vo.setPersonalVaultCipher(passwordManageUser.getEncryptedVaultCipher());
             vo.setPrivateKetSalt(passwordManageUser.getPrivateKeySalt());
             vo.setPrivateKeyIv(passwordManageUser.getPrivateKeyIv());
             vo.setPrivateKeyCipher(passwordManageUser.getPrivateKeyCipher());
