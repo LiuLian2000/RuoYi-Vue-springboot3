@@ -48,7 +48,7 @@ public class PasswordManageUserCredentialController extends BaseController {
     /**
      * 分页查询用户密码管理凭据
      */
-    // @PreAuthorize("@ss.hasPermi('system:credential:list')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "分页查询用户凭据", businessType = BusinessType.QUERY)
     @GetMapping("/list")
     public TableDataInfo list(PasswordManageUserCredential passwordManageUserCredential) {
@@ -75,7 +75,7 @@ public class PasswordManageUserCredentialController extends BaseController {
     /**
      * 导出用户密码管理凭据
      */
-    // @PreAuthorize("@ss.hasPermi('system:credential:export')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "导出用户凭据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, PasswordManageUserCredential passwordManageUserCredential) {
@@ -101,7 +101,7 @@ public class PasswordManageUserCredentialController extends BaseController {
     /**
      * 获取用户密码管理凭据
      */
-    // @PreAuthorize("@ss.hasPermi('system:credential:query')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "获取用户凭据", businessType = BusinessType.QUERY)
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
@@ -126,7 +126,7 @@ public class PasswordManageUserCredentialController extends BaseController {
     /**
      * 新增用户密码管理凭据
      */
-    // @PreAuthorize("@ss.hasPermi('system:credential:add')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "新增用户凭据", businessType = BusinessType.INSERT)
     @PostMapping(value = "/add")
     public AjaxResult add(@RequestBody PasswordManageUserCredential passwordManageUserCredential) {
@@ -152,7 +152,7 @@ public class PasswordManageUserCredentialController extends BaseController {
     /**
      * 修改用户密码管理凭据
      */
-    // @PreAuthorize("@ss.hasPermi('system:credential:edit')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "修改用户凭据", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody PasswordManageUserCredential passwordManageUserCredential) {
@@ -178,7 +178,7 @@ public class PasswordManageUserCredentialController extends BaseController {
     /**
      * 批量删除用户密码管理凭据
      */
-    // @PreAuthorize("@ss.hasPermi('system:credential:remove')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "批量删除用户凭据", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
@@ -208,7 +208,7 @@ public class PasswordManageUserCredentialController extends BaseController {
     /**
      * 删除用户密码管理凭据
      */
-    // @PreAuthorize("@ss.hasPermi('system:credential:remove')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "删除用户凭据", businessType = BusinessType.DELETE)
     @DeleteMapping("/delete/{id}")
     public AjaxResult remove(@PathVariable Long id) {

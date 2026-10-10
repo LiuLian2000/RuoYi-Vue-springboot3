@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,7 +56,7 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param id 团队id
          * @return 团队内所有成员列表
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:role:list')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "查询团队成员列表", businessType = BusinessType.QUERY)
         @GetMapping("/list")
         public TableDataInfo list(
@@ -79,7 +80,7 @@ public class PasswordManageTeamRoleController extends BaseController {
          * 新增团队成员
          * 
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "新增团队成员", businessType = BusinessType.INSERT)
         @PostMapping
         public AjaxResult add(@RequestBody PasswordManageTeamRoleDto dto) {
@@ -104,7 +105,7 @@ public class PasswordManageTeamRoleController extends BaseController {
         /**
          * 获取可添加的成员候选列表（有个人金库、且尚未加入该团队的用户）
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:role:add')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "查询团队可添加成员列表", businessType = BusinessType.QUERY)
         @GetMapping("/candidates")
         public AjaxResult candidates(
@@ -128,7 +129,7 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param deletedUserId 被删除团队成员的password_manage_user表id
          * @return
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:role:remove')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "删除团队成员", businessType = BusinessType.DELETE)
         @DeleteMapping
         public AjaxResult remove(@Parameter(name = "操作团队id") @RequestParam Long teamId,
@@ -149,6 +150,7 @@ public class PasswordManageTeamRoleController extends BaseController {
         /**
          * 团队成员退出团队
          */
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "退出团队", businessType = BusinessType.DELETE)
         @DeleteMapping("/leave")
         public AjaxResult LeaveTeam(@RequestParam Long teamId) {
@@ -172,6 +174,7 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param memberUserId 被赋予管理员权限成员的password_manage_user_id
          * @return
          */
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "设置管理员权限", businessType = BusinessType.UPDATE)
         @PostMapping("/setTeamManager")
         public AjaxResult setTeamManagerAuth(@RequestParam Long teamId, @RequestParam Long memberUserId) {
@@ -195,6 +198,7 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param managerUserId
          * @return
          */
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "移除管理员权限", businessType = BusinessType.UPDATE)
         @PostMapping("/removeTeamManager")
         public AjaxResult removeTeamManagerAuth(@RequestParam Long teamId, @RequestParam Long managerUserId) {
@@ -217,6 +221,7 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param passowrdManageUserId
          * @return
          */
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "移交超级管理员权限", businessType = BusinessType.UPDATE)
         @PostMapping("/transTeamSuperManager")
         public AjaxResult transTeamSuperManagerAuth(@RequestParam Long teamId, @RequestParam Long memberUserId) {
@@ -240,6 +245,7 @@ public class PasswordManageTeamRoleController extends BaseController {
          * @param teamId
          * @return
          */
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "查询当前用户在团队的角色", businessType = BusinessType.QUERY)
         @GetMapping("/loginUserRoleInfo")
         public AjaxResult getLoginUserPasswordManageTeamRoleInfo(@RequestParam Long teamId) {

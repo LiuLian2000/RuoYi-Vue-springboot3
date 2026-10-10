@@ -1,7 +1,6 @@
 package com.ruoyi.password_manage.service.impl;
 
 import java.util.List;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.password_manage.domain.PasswordManageUserCredential;
 import com.ruoyi.password_manage.mapper.PasswordManageUserCredentialMapper;
 import com.ruoyi.password_manage.service.IPasswordManageUserCredentialService;
@@ -53,7 +52,6 @@ public class PasswordManageUserCredentialServiceImpl implements IPasswordManageU
      */
     @Override
     public int insertPasswordManageUserCredential(PasswordManageUserCredential passwordManageUserCredential) {
-        passwordManageUserCredential.setCreateTime(DateUtils.getNowDate());
         return passwordManageUserCredentialMapper.insertPasswordManageUserCredential(passwordManageUserCredential);
     }
 

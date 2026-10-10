@@ -1,9 +1,10 @@
 package com.ruoyi.password_manage.domain;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 用户密码管理子，绑定password_manage_user对象 password_manage_user_credential
@@ -11,35 +12,50 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * @author ruoyi
  * @date 2026-08-26
  */
-public class PasswordManageUserCredential extends BaseEntity {
-    private static final long serialVersionUID = 1L;
+public class PasswordManageUserCredential {
 
-    /** $column.columnComment */
+    /** 主键id */
     private Long id;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    /** 密码归属用户password_manage_user的id */
+    @Excel(name = "密码归属用户password_manage_user的id")
     private Long passwordManageUserId;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    /** 平台名称 */
+    @Excel(name = "平台名称")
     private String platformName;
+
+    /** 平台地址 */
+    @Excel(name = "平台地址")
+    private String platformAddress;
 
     /** $column.columnComment */
     @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private String accountIv;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    /** 用户名密文 */
+    @Excel(name = "用户名密文")
     private String accountCipher;
 
     /** $column.columnComment */
     @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private String passwordIv;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    /** 密码密文 */
+    @Excel(name = "密码密文")
     private String passwordCipher;
+
+    /** $column.columnComment */
+    @Excel(name = "备注")
+    private String remark;
+
+    @Excel(name = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
+
+    @Excel(name = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     public void setId(Long id) {
         this.id = id;
@@ -97,17 +113,45 @@ public class PasswordManageUserCredential extends BaseEntity {
         return passwordCipher;
     }
 
+    public String getPlatformAddress() {
+        return platformAddress;
+    }
+
+    public void setPlatformAddress(String platformAddress) {
+        this.platformAddress = platformAddress;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("passwordManageUserId", getPasswordManageUserId())
-                .append("platformName", getPlatformName())
-                .append("accountIv", getAccountIv())
-                .append("accountCipher", getAccountCipher())
-                .append("passwordIv", getPasswordIv())
-                .append("passwordCipher", getPasswordCipher())
-                .append("createTime", getCreateTime())
-                .toString();
+        return "PasswordManageUserCredential [id=" + id + ", passwordManageUserId=" + passwordManageUserId
+                + ", platformName=" + platformName + ", platformAddress=" + platformAddress + ", accountIv=" + accountIv
+                + ", accountCipher=" + accountCipher + ", passwordIv=" + passwordIv + ", passwordCipher="
+                + passwordCipher + ", remark=" + remark + ", updateTime=" + updateTime + ", createTime=" + createTime
+                + "]";
     }
+
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,7 +56,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
          * @param teamId 团队id
          * @return 当前登陆用户所持有的团队金库密文及团队凭据密文
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:credential:list')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "查询团队凭据列表", businessType = BusinessType.QUERY)
         @GetMapping("/list")
         public AjaxResult list(@Parameter(name = "团队id") @RequestParam Long teamId) {
@@ -88,7 +89,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
          * @param platName 密码归属平台名称
          * @return
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:credential:query')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "模糊查询团队凭据", businessType = BusinessType.QUERY)
         @GetMapping("/fuzzyQuery")
         public AjaxResult getInfo(@Parameter(name = "团队id", required = true) @RequestParam Long teamId,
@@ -115,7 +116,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
         /**
          * 新增团队密码凭据
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:credential:add')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "新增团队凭据", businessType = BusinessType.INSERT)
         @PostMapping
         public AjaxResult add(@RequestBody PasswordManageTeamCredentialVo vo) {
@@ -139,7 +140,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
         /**
          * 修改团队密码凭据
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:credential:edit')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "修改团队凭据", businessType = BusinessType.UPDATE)
         @PostMapping("/edit")
         public AjaxResult edit(@RequestBody PasswordManageTeamCredentialVo vo) {
@@ -167,7 +168,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
          * @param teamId 被删除凭据所属团队的id
          * @return
          */
-        // @PreAuthorize("@ss.hasPermi('password_manage:credential:remove')")
+        @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "删除团队凭据", businessType = BusinessType.DELETE)
         @DeleteMapping()
         public AjaxResult remove(@RequestParam Long id, @RequestParam Long teamId) {

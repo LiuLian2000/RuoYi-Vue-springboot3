@@ -2,6 +2,8 @@ package com.ruoyi.password_manage.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ public class PasswordManageTeamCredentialServiceImpl implements IPasswordManageT
     private PasswordManageTeamCredentialMapper passwordManageTeamCredentialMapper;
 
     /**
-     * 查询团队密码凭据增删改查
+     * 查询团队密码凭据
      * 
      * @param id 团队密码凭据增删改查主键
      * @return 团队密码凭据增删改查
@@ -46,29 +48,31 @@ public class PasswordManageTeamCredentialServiceImpl implements IPasswordManageT
     }
 
     /**
-     * 新增团队密码凭据增删改查
+     * 新增团队密码凭据
      * 
      * @param passwordManageTeamCredential 团队密码凭据增删改查
      * @return 结果
      */
     @Override
     public int insertPasswordManageTeamCredential(PasswordManageTeamCredential passwordManageTeamCredential) {
+        passwordManageTeamCredential.setUpdateSysUserId(SecurityUtils.getLoginUser().getUserId());
         return passwordManageTeamCredentialMapper.insertPasswordManageTeamCredential(passwordManageTeamCredential);
     }
 
     /**
-     * 修改团队密码凭据增删改查
+     * 修改团队密码凭据
      * 
      * @param passwordManageTeamCredential 团队密码凭据增删改查
      * @return 结果
      */
     @Override
     public int updatePasswordManageTeamCredential(PasswordManageTeamCredential passwordManageTeamCredential) {
+        passwordManageTeamCredential.setUpdateSysUserId(SecurityUtils.getLoginUser().getUserId());
         return passwordManageTeamCredentialMapper.updatePasswordManageTeamCredential(passwordManageTeamCredential);
     }
 
     /**
-     * 批量删除团队密码凭据增删改查
+     * 批量删除团队密码凭据
      * 
      * @param ids 需要删除的团队密码凭据增删改查主键
      * @return 结果
@@ -79,7 +83,7 @@ public class PasswordManageTeamCredentialServiceImpl implements IPasswordManageT
     }
 
     /**
-     * 删除团队密码凭据增删改查信息
+     * 删除团队密码凭据
      * 
      * @param id 团队密码凭据增删改查主键
      * @return 结果

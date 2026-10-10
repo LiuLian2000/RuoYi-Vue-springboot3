@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,7 +45,7 @@ public class PasswordManageUserController extends BaseController {
     /**
      * 查询密码管理用户
      */
-    // @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "查询密码管理用户", businessType = BusinessType.QUERY)
     @GetMapping("/list")
     public TableDataInfo list(PasswordManageUser passwordManageUser) {
@@ -64,7 +65,7 @@ public class PasswordManageUserController extends BaseController {
     /**
      * 导出密码管理用户
      */
-    // @PreAuthorize("@ss.hasPermi('system:user:export')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "导出密码管理用户", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, PasswordManageUser passwordManageUser) {
@@ -85,7 +86,7 @@ public class PasswordManageUserController extends BaseController {
      * 查询密码管理用户
      * 
      */
-    // @PreAuthorize("@ss.hasPermi('system:user:query')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "查询密码管理用户", businessType = BusinessType.QUERY)
     @GetMapping(value = "/getInfo/{id}")
     public AjaxResult getInfo(@Parameter(description = "用户在password_manage_user的主键id") @PathVariable("id") Long id) {
@@ -106,7 +107,7 @@ public class PasswordManageUserController extends BaseController {
      * @param userId
      * @return
      */
-    // @PreAuthorize("@ss.hasPermi('system:user:query')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "查询密码管理用户", businessType = BusinessType.QUERY)
     @GetMapping(value = "/getInfoByUserId/{userId}")
     public AjaxResult getInfoByUserId(
@@ -125,7 +126,7 @@ public class PasswordManageUserController extends BaseController {
     /**
      * 新增密码管理用户
      */
-    // @PreAuthorize("@ss.hasPermi('system:user:add')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "新增密码管理用户", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody PasswordManageUser passwordManageUser) {
@@ -143,7 +144,7 @@ public class PasswordManageUserController extends BaseController {
     /**
      * 修改密码管理用户
      */
-    // @PreAuthorize("@ss.hasPermi('system:user:edit')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "修改密码管理用户", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody PasswordManageUser passwordManageUser) {
@@ -161,7 +162,7 @@ public class PasswordManageUserController extends BaseController {
     /**
      * 删除密码管理用户
      */
-    // @PreAuthorize("@ss.hasPermi('system:user:remove')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "删除密码管理用户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {

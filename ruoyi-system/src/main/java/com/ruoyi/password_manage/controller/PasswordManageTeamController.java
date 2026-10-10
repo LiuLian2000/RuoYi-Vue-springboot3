@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -59,7 +60,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 查询管理团队列表
      */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:list')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "查询管理团队列表", businessType = BusinessType.QUERY)
     @GetMapping("/ManageTeamlist")
     public AjaxResult getManageTeamlist() {
@@ -86,7 +87,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 查询用户所在的团队列表
      */
-    // @PreAuthorize("@ss.hasPermi('password_manage:role:team_list')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "查询所在团队列表", businessType = BusinessType.QUERY)
     @GetMapping("/myTeam")
     public TableDataInfo getTeamList() {
@@ -108,7 +109,7 @@ public class PasswordManageTeamController extends BaseController {
      * 新增团队，更新创建人为超级管理员
      * 入参只需要team_name,reamrk,teamValutKeyEncryptedCipher
      */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:add')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "新增团队", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody PasswordManageTeamVo vo) {
@@ -127,7 +128,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 团队密码管理-修改团队信息
      */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:edit')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "修改团队", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody EditPasswordManageTeamDto dto) {
@@ -148,7 +149,7 @@ public class PasswordManageTeamController extends BaseController {
     /**
      * 解散团队
      */
-    // @PreAuthorize("@ss.hasPermi('password_manage:team:remove')")
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
     @Log(title = "解散团队", businessType = BusinessType.DELETE)
     @DeleteMapping("/{teamId}")
     public AjaxResult remove(

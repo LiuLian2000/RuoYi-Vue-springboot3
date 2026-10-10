@@ -10,7 +10,6 @@ import com.ruoyi.password_manage.service.IPasswordManageTeamTmpAppointService;
 
 @Service
 @Transactional
-// TODO 所有的事务都因该在Service层开启，同时注意异常像上抛出，Transactional要制定rollback
 public class PasswordManageTeamTmpAppointImpl implements IPasswordManageTeamTmpAppointService {
 
     @Autowired

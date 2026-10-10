@@ -1,9 +1,8 @@
 package com.ruoyi.password_manage.domain.vo;
 
 import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.core.domain.BaseEntity;
 
-public class PasswordManageTeamCredentialVo extends BaseEntity {
+public class PasswordManageTeamCredentialVo {
 
     /** id主键 */
     private Long id;
@@ -15,6 +14,10 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
     /** 平台名称 */
     @Excel(name = "平台名称")
     private String platformName;
+
+    /** 平台网址 */
+    @Excel(name = "平台网址")
+    private String platformAddress;
 
     /** 用户名iv */
     @Excel(name = "用户名salt")
@@ -31,6 +34,14 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
     /** 密码加密密文 */
     @Excel(name = "密码加密密文")
     private String passwordCipher;
+
+    /** 备注 */
+    @Excel(name = "备注")
+    private String remark;
+
+    /** 团队凭据更新人的昵称 */
+    @Excel(name = "团队凭据更新人的昵称")
+    private String updateSysUserNickName;
 
     /** 逻辑删除，0表示未删除，1表示删除 */
     @Excel(name = "逻辑删除，0表示未删除，1表示删除")
@@ -98,6 +109,38 @@ public class PasswordManageTeamCredentialVo extends BaseEntity {
 
     public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public String getPlatformAddress() {
+        return platformAddress;
+    }
+
+    public void setPlatformAddress(String platformAddress) {
+        this.platformAddress = platformAddress;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        return "PasswordManageTeamCredentialVo [id=" + id + ", teamId=" + teamId + ", platformName=" + platformName
+                + ", platformAddress=" + platformAddress + ", accountSalt=" + accountSalt + ", accountCipher="
+                + accountCipher + ", passwordSalt=" + passwordSalt + ", passwordCipher=" + passwordCipher + ", remark="
+                + remark + ", isDeleted=" + isDeleted + "]";
+    }
+
+    public String getUpdateUserNickName() {
+        return updateSysUserNickName;
+    }
+
+    public void setUpdateUserNickName(String updateUserNickName) {
+        this.updateSysUserNickName = updateUserNickName;
     }
 
 }
