@@ -1,8 +1,6 @@
 package com.ruoyi.password_manage.domain;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 

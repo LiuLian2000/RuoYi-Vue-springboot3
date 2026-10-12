@@ -1,9 +1,6 @@
 package com.ruoyi.password_manage.service;
 
 import java.util.List;
-
-import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.PasswordManageTeamRole;
 import com.ruoyi.password_manage.domain.dto.PasswordManageTeamRoleDto;
 import com.ruoyi.password_manage.domain.vo.MyTeamVo;

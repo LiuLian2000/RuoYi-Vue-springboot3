@@ -11,7 +11,7 @@
  Target Server Version : 50744 (5.7.44)
  File Encoding         : 65001
 
- Date: 05/09/2026 14:13:36
+ Date: 12/10/2026 11:14:19
 */
 
 SET NAMES utf8mb4;
@@ -24,20 +24,19 @@ DROP TABLE IF EXISTS `password_manage_user_credential`;
 CREATE TABLE `password_manage_user_credential`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `password_manage_user_id` bigint(20) NOT NULL,
-  `platform_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `platform_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `platform_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `account_iv` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `account_cipher` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password_iv` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password_cipher` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `create_time` datetime NULL DEFAULT NULL,
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
   `is_deleted` tinyint(1) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_password_manage_user_id`(`password_manage_user_id`) USING BTREE,
   CONSTRAINT `fk_password_manage_user_id` FOREIGN KEY (`password_manage_user_id`) REFERENCES `password_manage_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户密码管理子表，绑定password_manage_user表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of password_manage_user_credential
--- ----------------------------
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户密码管理子表，绑定password_manage_user表' ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -1,7 +1,5 @@
 package com.ruoyi.password_manage.domain.vo;
 
-import com.ruoyi.common.annotation.Excel;
-
 /**
  * 新加团队成员时，使用此类将创建人的三要素和被添加成员的公钥传回
  * TeamCreatorRoleVo
