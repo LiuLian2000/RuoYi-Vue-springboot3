@@ -54,7 +54,7 @@ public class TeamRoleVerifyUtils {
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
         if (role == null || (TeamRole.SUPER_ADMIN != role.getTeamRole()
                 && TeamRole.ADMIN != role.getTeamRole())) {
-            throw new RuntimeException(ExceptionMessages.NOT_TEAM_ADMIN);
+            throw new ServiceException(ExceptionMessages.NOT_TEAM_ADMIN);
         } else {
             return new ArrayList<>(List.of(passwordManageUserId, role));
         }
@@ -72,7 +72,7 @@ public class TeamRoleVerifyUtils {
         PasswordManageTeamRole role = passwordManageTeamRoleService
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
         if (role == null || TeamRole.SUPER_ADMIN != role.getTeamRole()) {
-            throw new RuntimeException(ExceptionMessages.NOT_TEAM_SUPER_ADMIN);
+            throw new ServiceException(ExceptionMessages.NOT_TEAM_SUPER_ADMIN);
         } else {
             return new ArrayList<>(List.of(passwordManageUserId, role));
         }

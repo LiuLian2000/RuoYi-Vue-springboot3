@@ -129,7 +129,7 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId,
                         passwordManageUserId);
         if (userRoleInfo == null) {
-            throw new RuntimeException(ExceptionMessages.NO_MEM_ROLE);
+            throw new ServiceException(ExceptionMessages.NO_MEM_ROLE);
         }
         return userRoleInfo;
     }
@@ -183,9 +183,9 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
         PasswordManageTeamRole role = passwordManageTeamRoleMapper
                 .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, passwordManageUserId);
         if (role == null) {
-            throw new RuntimeException(ExceptionMessages.NOT_TEAM_MEM);
+            throw new ServiceException(ExceptionMessages.NOT_TEAM_MEM);
         } else if (TeamRole.SUPER_ADMIN == role.getTeamRole()) {
-            throw new RuntimeException(ExceptionMessages.SUPER_ADMIN_CANNOT_LEAVE_TEAM);
+            throw new ServiceException(ExceptionMessages.SUPER_ADMIN_CANNOT_LEAVE_TEAM);
         }
         return passwordManageTeamRoleMapper.MemberLeaveTeam(teamId, passwordManageUserId);
     }

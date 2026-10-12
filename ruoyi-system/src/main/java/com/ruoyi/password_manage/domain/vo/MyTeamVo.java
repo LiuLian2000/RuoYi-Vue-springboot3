@@ -1,5 +1,8 @@
 package com.ruoyi.password_manage.domain.vo;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 
 /**
@@ -27,6 +30,13 @@ public class MyTeamVo {
 
     /** 当前用户在该团队中的角色 */
     private Integer teamRole;
+
+    @Excel(name = "团队创建人昵称")
+    private String createUserNickName;
+
+    @Excel(name = "团队创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     /** 团队备注信息 */
     private String remark;
@@ -87,11 +97,28 @@ public class MyTeamVo {
         this.remark = remark;
     }
 
+    public String getCreateUserNickName() {
+        return createUserNickName;
+    }
+
+    public void setCreateUserNickName(String createUserNickName) {
+        this.createUserNickName = createUserNickName;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
     @Override
     public String toString() {
         return "MyTeamVo [teamId=" + teamId + ", teamName=" + teamName + ", superManagerUserId=" + superManagerUserId
                 + ", superManagerUserName=" + superManagerUserName + ", superManagerNickName=" + superManagerNickName
-                + ", teamRole=" + teamRole + ", remark=" + remark + "]";
+                + ", teamRole=" + teamRole + ", createUserNickName=" + createUserNickName + ", createTime=" + createTime
+                + ", remark=" + remark + "]";
     }
 
 }
