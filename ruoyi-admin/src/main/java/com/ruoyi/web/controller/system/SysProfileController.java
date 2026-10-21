@@ -24,6 +24,8 @@ import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.file.MimeTypeUtils;
 import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.password_manage.domain.PasswordManageUser;
+import com.ruoyi.password_manage.service.PasswordManageUserService;
 import com.ruoyi.system.service.ISysUserService;
 
 /**
@@ -40,6 +42,9 @@ public class SysProfileController extends BaseController
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private PasswordManageUserService passwordManageUserService;
 
     /**
      * 个人信息
@@ -86,7 +91,7 @@ public class SysProfileController extends BaseController
     }
 
     /**
-     * 重置密码
+     * 重置密码（个人自助改密，含信封重加密；超级管理员也可用，无 system:user:resetPwd 权限要求）
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
@@ -109,6 +114,28 @@ public class SysProfileController extends BaseController
         newPassword = SecurityUtils.encryptPassword(newPassword);
         if (userService.resetUserPwd(userId, newPassword) > 0)
         {
+            // 同步重加密信封 + RSA 私钥（方案 A：主密码=登录密码）；二者均用登录密码加密，需一起重加密
+            PasswordManageUser pm = passwordManageUserService.selectPasswordManageUserByUserId(userId);
+            if (pm != null)
+            {
+                if (StringUtils.isNotEmpty(params.get("encryptedVaultCipher")))
+                {
+                    pm.setRandomSalt(params.get("randomSalt"));
+                    pm.setEncryptedVaultIv(params.get("encryptedVaultIv"));
+                    pm.setEncryptedVaultCipher(params.get("encryptedVaultCipher"));
+                }
+                if (StringUtils.isNotEmpty(params.get("privateKeyCipher")))
+                {
+                    pm.setPrivateKeySalt(params.get("privateKeySalt"));
+                    pm.setPrivateKeyIv(params.get("privateKeyIv"));
+                    pm.setPrivateKeyCipher(params.get("privateKeyCipher"));
+                }
+                if (StringUtils.isNotEmpty(params.get("encryptedVaultCipher"))
+                        || StringUtils.isNotEmpty(params.get("privateKeyCipher")))
+                {
+                    passwordManageUserService.updatePasswordManageUser(pm);
+                }
+            }
             // 更新缓存用户密码&密码最后更新时间
             loginUser.getUser().setPwdUpdateDate(DateUtils.getNowDate());
             loginUser.getUser().setPassword(newPassword);
