@@ -1,6 +1,7 @@
 package com.ruoyi.password_manage.mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import com.ruoyi.password_manage.domain.PasswordManageTeamCredential;
 
 /**
@@ -65,5 +66,6 @@ public interface PasswordManageTeamCredentialMapper {
      * @param platName
      * @return
      */
-    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredentialFuzzyList(Long teamId, String platformName);
+    public List<PasswordManageTeamCredential> selectPasswordManageTeamCredentialFuzzyList(
+            @Param("teamId") Long teamId, @Param("platformName") String platformName);
 }

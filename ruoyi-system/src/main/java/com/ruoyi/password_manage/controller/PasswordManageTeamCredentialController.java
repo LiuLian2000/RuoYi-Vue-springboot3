@@ -59,7 +59,8 @@ public class PasswordManageTeamCredentialController extends BaseController {
         @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
         @Log(title = "查询团队凭据列表", businessType = BusinessType.QUERY)
         @GetMapping("/list")
-        public AjaxResult list(@Parameter(name = "团队id") @RequestParam Long teamId) {
+        public AjaxResult list(@Parameter(name = "团队id") @RequestParam Long teamId,
+                        @Parameter(name = "平台名称，可选") @RequestParam(required = false) String platName) {
                 try {
                         List<Object> tmpList = teamRoleVerifyUtils.teamMemberVerify(teamId);
                         Long passwordManageUserId = (Long) tmpList.get(0);
@@ -69,7 +70,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
                         startPage();
                         TeamCredentialVo vo = new TeamCredentialVo();
                         List<PasswordManageTeamCredential> list = passwordManageTeamCredentialService
-                                        .selectPasswordManageTeamCredentialList(teamId);
+                                        .selectPasswordManageTeamCredentialFuzzyList(teamId, platName);
                         vo.setTeamValutKeyEncryptedCipher(role.getTeamValutKeyEncryptedCipher());
                         vo.setTeamCredentials(list);
                         return success(vo);
@@ -93,7 +94,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
         @Log(title = "模糊查询团队凭据", businessType = BusinessType.QUERY)
         @GetMapping("/fuzzyQuery")
         public AjaxResult getInfo(@Parameter(name = "团队id", required = true) @RequestParam Long teamId,
-                        @Parameter(name = "查看团队密码平台", required = false) @RequestParam String platName) {
+                        @Parameter(name = "查看团队密码平台", required = false) @RequestParam(required = false) String platName) {
                 try {
                         List<Object> tmpList = teamRoleVerifyUtils.teamMemberVerify(teamId);
                         PasswordManageTeamRole role = (PasswordManageTeamRole) tmpList.get(1);
