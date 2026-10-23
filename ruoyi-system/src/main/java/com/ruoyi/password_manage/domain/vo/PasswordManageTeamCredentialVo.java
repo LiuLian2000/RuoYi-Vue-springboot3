@@ -47,6 +47,10 @@ public class PasswordManageTeamCredentialVo {
     @Excel(name = "逻辑删除，0表示未删除，1表示删除")
     private Integer isDeleted;
 
+    /** 分享人sys用户id */
+    @Excel(name = "分享人sys用户id")
+    private Long sharerId;
+
     public Long getId() {
         return id;
     }
@@ -111,6 +115,14 @@ public class PasswordManageTeamCredentialVo {
         this.isDeleted = isDeleted;
     }
 
+    public Long getSharerId() {
+        return sharerId;
+    }
+
+    public void setSharerId(Long sharerId) {
+        this.sharerId = sharerId;
+    }
+
     public String getPlatformAddress() {
         return platformAddress;
     }
@@ -131,8 +143,8 @@ public class PasswordManageTeamCredentialVo {
     public String toString() {
         return "PasswordManageTeamCredentialVo [id=" + id + ", teamId=" + teamId + ", platformName=" + platformName
                 + ", platformAddress=" + platformAddress + ", accountSalt=" + accountSalt + ", accountCipher="
-                + accountCipher + ", passwordSalt=" + passwordSalt + ", passwordCipher=" + passwordCipher + ", remark="
-                + remark + ", isDeleted=" + isDeleted + "]";
+                + accountCipher                 + ", passwordSalt=" + passwordSalt + ", passwordCipher=" + passwordCipher + ", remark="
+                + remark + ", sharerId=" + sharerId + ", isDeleted=" + isDeleted + "]";
     }
 
     public String getUpdateUserNickName() {

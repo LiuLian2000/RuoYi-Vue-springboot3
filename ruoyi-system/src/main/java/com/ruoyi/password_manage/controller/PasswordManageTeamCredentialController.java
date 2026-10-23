@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -49,6 +50,27 @@ public class PasswordManageTeamCredentialController extends BaseController {
         private TeamRoleVerifyUtils teamRoleVerifyUtils;
 
         private Logger log = LoggerFactory.getLogger(PasswordManageTeamController.class);
+
+        /**
+         * 凭据管理权限：
+         *  - 有分享人(sharerId)的凭据：仅分享人可修改/删除（满足“只有分享人才能修改，其他人只能查看”的需求）；
+         *  - 历史数据(sharerId 为 null)：沿用原规则，仅团队管理员可修改/删除。
+         */
+        private void assertCanManageTeamCredential(Long credId, Long teamId) {
+                PasswordManageTeamCredential existing = passwordManageTeamCredentialService
+                                .selectPasswordManageTeamCredentialById(credId);
+                if (existing == null) {
+                        throw new ServiceException(ExceptionMessages.NORMAL);
+                }
+                if (existing.getSharerId() == null) {
+                        teamRoleVerifyUtils.teamManagerVerify(teamId);
+                        return;
+                }
+                Long loginUserId = SecurityUtils.getLoginUser().getUserId();
+                if (!loginUserId.equals(existing.getSharerId())) {
+                        throw new ServiceException("该凭据由分享人创建，只有分享人可修改或删除");
+                }
+        }
 
         /***
          * 查询团队密码凭据列表
@@ -146,7 +168,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
         @PostMapping("/edit")
         public AjaxResult edit(@RequestBody PasswordManageTeamCredentialVo vo) {
                 try {
-                        teamRoleVerifyUtils.teamManagerVerify(vo.getTeamId());
+                        assertCanManageTeamCredential(vo.getId(), vo.getTeamId());
                         PasswordManageTeamCredential passwordManageTeamCredential = new PasswordManageTeamCredential();
                         BeanUtils.copyProperties(vo, passwordManageTeamCredential);
                         return success(
@@ -174,7 +196,7 @@ public class PasswordManageTeamCredentialController extends BaseController {
         @DeleteMapping()
         public AjaxResult remove(@RequestParam Long id, @RequestParam Long teamId) {
                 try {
-                        teamRoleVerifyUtils.teamManagerVerify(teamId);
+                        assertCanManageTeamCredential(id, teamId);
                         return success(passwordManageTeamCredentialService.deletePasswordManageTeamCredentialById(id));
                 } catch (ServiceException se) {
                         throw se;

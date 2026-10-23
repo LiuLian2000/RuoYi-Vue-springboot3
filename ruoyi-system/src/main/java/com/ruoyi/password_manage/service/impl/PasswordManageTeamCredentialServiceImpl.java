@@ -52,6 +52,9 @@ public class PasswordManageTeamCredentialServiceImpl implements IPasswordManageT
      */
     @Override
     public int insertPasswordManageTeamCredential(PasswordManageTeamCredential passwordManageTeamCredential) {
+        if (passwordManageTeamCredential.getSharerId() == null) {
+            passwordManageTeamCredential.setSharerId(SecurityUtils.getLoginUser().getUserId());
+        }
         passwordManageTeamCredential.setUpdateSysUserId(SecurityUtils.getLoginUser().getUserId());
         return passwordManageTeamCredentialMapper.insertPasswordManageTeamCredential(passwordManageTeamCredential);
     }

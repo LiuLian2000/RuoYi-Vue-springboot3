@@ -58,6 +58,10 @@ public class PasswordManageTeamCredential {
     @Excel(name = "凭据更新人的sysuserId")
     private Long updateSysUserId;
 
+    /** 分享人sys用户id：个人密码分享入团队时记录分享人；原生团队凭据记录创建人；历史数据可能为null */
+    @Excel(name = "分享人sys用户id")
+    private Long sharerId;
+
     /** 逻辑删除，0表示未删除，1表示删除 */
     @Excel(name = "逻辑删除，0表示未删除，1表示删除")
     private Integer isDeleted;
@@ -163,8 +167,8 @@ public class PasswordManageTeamCredential {
         return "PasswordManageTeamCredential [id=" + id + ", teamId=" + teamId + ", platformName=" + platformName
                 + ", platformAddress=" + platformAddress + ", accountSalt=" + accountSalt + ", accountCipher="
                 + accountCipher + ", passwordSalt=" + passwordSalt + ", passwordCipher=" + passwordCipher
-                + ", createTime=" + createTime + ", updateTime=" + updateTime + ", remark=" + remark + ", isDeleted="
-                + isDeleted + "]";
+                + ", createTime=" + createTime + ", updateTime=" + updateTime + ", remark=" + remark + ", sharerId="
+                + sharerId + ", isDeleted=" + isDeleted + "]";
     }
 
     public Long getUpdateSysUserId() {
@@ -173,6 +177,14 @@ public class PasswordManageTeamCredential {
 
     public void setUpdateSysUserId(Long updateSysUserId) {
         this.updateSysUserId = updateSysUserId;
+    }
+
+    public Long getSharerId() {
+        return sharerId;
+    }
+
+    public void setSharerId(Long sharerId) {
+        this.sharerId = sharerId;
     }
 
 }
