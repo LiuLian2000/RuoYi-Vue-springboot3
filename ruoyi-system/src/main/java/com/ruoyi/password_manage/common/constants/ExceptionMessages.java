@@ -31,4 +31,12 @@ public class ExceptionMessages {
 
     public static final String CANNOT_DELETE_ADMIN = "无法对团队管理员执行删除操作。";
 
+    public static final String APPLY_ALREADY_EXIST = "你已申请加入该团队，请等待管理员审批。";
+
+    public static final String APPLY_NOT_EXIST = "申请记录不存在或已被删除。";
+
+    public static final String APPLY_ALREADY_HANDLED = "该申请已处理，请勿重复操作。";
+
+    public static final String PM_USER_NO_VAULT = "你尚未开通个人金库，无法申请加入团队，请先前往个人密码页初始化金库。";
+
 }

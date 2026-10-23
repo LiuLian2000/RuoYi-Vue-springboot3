@@ -1,9 +1,11 @@
 package com.ruoyi.password_manage.mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.dto.EditPasswordManageTeamDto;
 import com.ruoyi.password_manage.domain.vo.MyManagementTeamVo;
+import com.ruoyi.password_manage.domain.vo.TeamSearchVo;
 
 /**
  * 团队密码管理-团队密码Mapper接口
@@ -84,4 +86,14 @@ public interface PasswordManageTeamMapper {
      * @return
      */
     public Integer selectTeamByTeamName(String teamName);
+
+    /**
+     * 搜索团队（按名称模糊），并标记当前用户的加入/申请状态
+     * 
+     * @param keyword 关键字
+     * @param currentPmUserId 当前用户 password_manage_user.id
+     * @return 团队搜索结果
+     */
+    public List<TeamSearchVo> searchTeams(@Param("keyword") String keyword,
+            @Param("currentPmUserId") Long currentPmUserId);
 }

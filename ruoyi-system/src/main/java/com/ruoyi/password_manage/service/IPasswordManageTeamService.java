@@ -5,6 +5,7 @@ import com.ruoyi.password_manage.domain.PasswordManageTeam;
 import com.ruoyi.password_manage.domain.dto.EditPasswordManageTeamDto;
 import com.ruoyi.password_manage.domain.vo.MyManagementTeamVo;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamVo;
+import com.ruoyi.password_manage.domain.vo.TeamSearchVo;
 
 /**
  * 团队密码管理-团队密码Service接口
@@ -73,4 +74,13 @@ public interface IPasswordManageTeamService {
      * 查询团队管理员的Password_manage_user_id
      */
     public List<Long> selectTeamManagerPasswordManageUserIdList(Long teamId);
+
+    /**
+     * 搜索团队（按名称模糊），并标记当前用户的加入/申请状态
+     * 
+     * @param keyword 关键字
+     * @param currentPmUserId 当前用户 password_manage_user.id
+     * @return 团队搜索结果
+     */
+    public List<TeamSearchVo> searchTeams(String keyword, Long currentPmUserId);
 }

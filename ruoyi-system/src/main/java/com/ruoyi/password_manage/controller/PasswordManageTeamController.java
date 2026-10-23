@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -26,6 +27,7 @@ import com.ruoyi.password_manage.domain.dto.EditPasswordManageTeamDto;
 import com.ruoyi.password_manage.domain.vo.MyManagementTeamVo;
 import com.ruoyi.password_manage.domain.vo.MyTeamVo;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamVo;
+import com.ruoyi.password_manage.domain.vo.TeamSearchVo;
 import com.ruoyi.password_manage.service.IPasswordManageTeamRoleService;
 import com.ruoyi.password_manage.service.IPasswordManageTeamService;
 import com.ruoyi.password_manage.service.PasswordManageUserService;
@@ -163,7 +165,29 @@ public class PasswordManageTeamController extends BaseController {
             log.info(e.getMessage(), e);
             throw new ServiceException(ExceptionMessages.NORMAL);
         }
+    }
 
+    /**
+     * 搜索团队（按名称模糊），并标记当前用户的加入/申请状态
+     */
+    @PreAuthorize("@ss.hasPermi('system:passwordManage:operate')")
+    @Log(title = "搜索团队", businessType = BusinessType.QUERY)
+    @GetMapping("/search")
+    public AjaxResult searchTeams(@RequestParam(required = false, defaultValue = "") String keyword) {
+        try {
+            Long sysUserId = getLoginUser().getUserId();
+            PasswordManageUser pmUser = passwordManageUserService.selectPasswordManageUserByUserId(sysUserId);
+            if (pmUser == null) {
+                throw new ServiceException(ExceptionMessages.VAULT_UNLOCK);
+            }
+            List<TeamSearchVo> list = passwordManageTeamService.searchTeams(keyword, pmUser.getId());
+            return success(list);
+        } catch (ServiceException se) {
+            throw se;
+        } catch (Exception e) {
+            log.info(e.getMessage(), e);
+            throw new ServiceException(ExceptionMessages.NORMAL);
+        }
     }
 
 }

@@ -17,6 +17,7 @@ import com.ruoyi.password_manage.domain.PasswordManageUser;
 import com.ruoyi.password_manage.domain.dto.EditPasswordManageTeamDto;
 import com.ruoyi.password_manage.domain.vo.MyManagementTeamVo;
 import com.ruoyi.password_manage.domain.vo.PasswordManageTeamVo;
+import com.ruoyi.password_manage.domain.vo.TeamSearchVo;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageTeamRoleMapper;
 import com.ruoyi.password_manage.mapper.PasswordManageUserMapper;
@@ -156,6 +157,11 @@ public class PasswordManageTeamServiceImpl implements IPasswordManageTeamService
     @Override
     public List<Long> selectTeamManagerPasswordManageUserIdList(Long teamId) {
         return passwordManageTeamRoleMapper.selectTeamManagerPasswordManageUserIdList(teamId);
+    }
+
+    @Override
+    public List<TeamSearchVo> searchTeams(String keyword, Long currentPmUserId) {
+        return passwordManageTeamMapper.searchTeams(keyword, currentPmUserId);
     }
 
 }

@@ -151,6 +151,21 @@ public class PasswordManageTeamRoleServiceImpl implements IPasswordManageTeamRol
         passwordManageTeamRole.setTeamRole(TeamRole.MEMBER);
         // 尚未使用被添加成员公钥对金库秘钥加密
         if (StringUtils.isEmpty(passwordManageTeamRole.getTeamValutKeyEncryptedCipher())) {
+            // 兜底：若已存在该成员的角色行（上次 step2 未完成或重复提交），复用而不重复插入
+            if (passwordManageTeamRoleMapper.selectTeamMemberHaveExist(teamId, memberId) > 0) {
+                PasswordManageTeamRole existing = passwordManageTeamRoleMapper
+                        .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, memberId);
+                if (existing != null) {
+                    TeamCreatorRoleVo reuseVo = new TeamCreatorRoleVo();
+                    PasswordManageUser member = passwordManageUserMapper.selectPasswordManageUserById(memberId);
+                    reuseVo.setMemberPublicKey(member.getPublicKey());
+                    PasswordManageTeamRole teamCreatorRole = passwordManageTeamRoleMapper
+                            .selectPasswordManageTeamRoleByPasswordManageUserId(teamId, teamManagerUserId);
+                    reuseVo.setTeamValutKeyEncryptedCipher(teamCreatorRole.getTeamValutKeyEncryptedCipher());
+                    reuseVo.setNewMemberRoleId(existing.getId());
+                    return reuseVo;
+                }
+            }
             // 建立该成员的role记录
             passwordManageTeamRoleMapper.insertPasswordManageTeamRole(passwordManageTeamRole);
             // 将当前管理员的role记录和被添加团队成员的公钥传回前端
